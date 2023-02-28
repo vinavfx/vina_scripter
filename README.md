@@ -30,6 +30,7 @@ import vina_scripter
 ```
 
 # Basic Use
+To use the editor without vim mode, press the 'Vim' button on the top right, and it will work like a normal editor !
 - <b>:w</b> : Save script to node
 - <b>:wq</b> : Save node and Exit
 - <b>:q</b> : Exit node
