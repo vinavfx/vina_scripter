@@ -3,7 +3,7 @@ Python and Blinkscript editor for Nuke, based on the VIM editor,
 inspired by https://github.com/adrianpueyo/KnobScripter, but rewritten, 
 the idea that is simpler and more useful and without the option to edit external files,
 and just it will support Nuke with Python 3, not to dirty the code,
-to make it compatible with older nukes, do a folk.
+to make it compatible with older nukes, do a Fork.
 
 
 # Feautres
