@@ -18,9 +18,9 @@ from .editor import editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
 
-from ..panels import panel_widget
+from ..nuke_util.panels import panel_widget
 from ..python_util.util import jread, jwrite
-from ..nuke_util import get_nuke_path
+from ..nuke_util.nuke_util import get_nuke_path
 
 
 class scripter_widget(panel_widget):

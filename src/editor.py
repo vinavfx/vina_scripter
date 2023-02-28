@@ -8,9 +8,9 @@ from PySide2.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QWidget, QVBox
 from PySide2.QtCore import Qt, QRect, QRegExp
 
 from .keys_normal_mode import key_press_event as normal_key_press_event
-from . import keys_vim_mode
-from .vim import vim_widget
-from .vim_nav_actions import center_cursor
+from .vim import keys_vim_mode
+from .vim.vim import vim_widget
+from .vim.vim_nav_actions import center_cursor
 
 
 class editor_widget(QWidget):

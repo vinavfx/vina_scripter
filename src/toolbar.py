@@ -5,7 +5,7 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel, QCheckBox
 from PySide2.QtGui import QIcon
 
-from ..nuke_util import get_vina_path
+from ..nuke_util.nuke_util import get_vina_path
 
 
 class toolbar_widget(QWidget):
