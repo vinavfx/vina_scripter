@@ -29,6 +29,28 @@ git clone --recursive https://github.com/fcocc77/vina_scripter.git "C:\Users\<us
 import vina_scripter
 ```
 
+# Basic Use
+- <b>:w</b> : Save script to node
+- <b>:wq</b> : Save node and Exit
+- <b>:q</b> : Exit node
+- <b>:tabnew</b> : New script page
+- <b>:tabclose</b> : Close script page
+- <b>:tabo</b> : Close all except the current page
+- <b>:1, :2, :3...</b> : Go to line
+- <b>/</b> : Search
+- <b>:retab</b> : Change the indentation to 4 spaces
+
+- <b>i</b> : Insert mode
+- <b>v</b> : Visual mode
+- <b>V</b> : Visual Line mode
+- <b>Ctrl+[</b> : Exit modes and exit selected words
+- <b>*</b> : Find word under cursor
+
+- For all shortcuts and commands see them here, https://vim.rtorr.com/
+not all vim shortcuts are implemented in <b>Vina Scripter</b> !
+In this script are all available shortcuts, in case you want to change them at will.
+[keys_vim_mode.py](./src/vim/keys_vim_mode.py)
+
 
 # Screenshots
 
