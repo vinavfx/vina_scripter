@@ -84,7 +84,7 @@ class scripter_widget(panel_widget):
 
         nuke.addOnScriptClose(lambda: self.save_state(False))
 
-        self.state_file = '{}/knob_scripter_state.json'.format(get_nuke_path())
+        self.state_file = '{}/vina_scripter_state.json'.format(get_nuke_path())
         self.restored_state = False
         self.python_knobs_list = ['PythonKnob', 'PyScript_Knob', 'PythonCustomKnob']
 
