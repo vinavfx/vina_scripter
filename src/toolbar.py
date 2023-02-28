@@ -5,7 +5,8 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel, QCheckBox
 from PySide2.QtGui import QIcon
 
-from ..nuke_util.nuke_util import get_vina_path
+from ..nuke_util.nuke_util import get_nuke_path
+icons_path = '{}/vina_scripter/icons'.format(get_nuke_path())
 
 
 class toolbar_widget(QWidget):
@@ -18,20 +19,20 @@ class toolbar_widget(QWidget):
 
         self.enter_node_button = QPushButton()
         self.enter_node_button.setIcon(
-            QIcon('{}/icons/icon_pick.png'.format(get_vina_path())))
+            QIcon('{}/icon_pick.png'.format(icons_path)))
         self.enter_node_button.setToolTip('Enter to Node')
         self.enter_node_button.clicked.connect(
             lambda: parent.enter_node_menu.invoke())
 
         exec_script_button = QPushButton()
         exec_script_button.setIcon(
-            QIcon('{}/icons/icon_run.png'.format(get_vina_path())))
+            QIcon('{}/icon_run.png'.format(icons_path)))
         exec_script_button.setToolTip('Execute current Knob')
         exec_script_button.clicked.connect(self.parent.execute_script)
 
         clean_output_button = QPushButton()
         clean_output_button.setIcon(
-            QIcon('{}/icons/clear_console.png'.format(get_vina_path())))
+            QIcon('{}/clear_console.png'.format(icons_path)))
         clean_output_button.setToolTip('Clean output console')
         clean_output_button.clicked.connect(self.parent.clean_output_console)
 
@@ -46,7 +47,7 @@ class toolbar_widget(QWidget):
         self.vim_mode_button.setCheckable(True)
         self.vim_mode_button.setToolTip('Same functionality as the VIM editor')
         self.vim_mode_button.setIcon(
-            QIcon('{}/icons/vim.png'.format(get_vina_path())))
+            QIcon('{}/vim.png'.format(icons_path)))
         self.vim_mode_button.toggled.connect(self.parent.set_vim_mode)
 
         layout.addWidget(self.enter_node_button)
@@ -64,19 +65,19 @@ class toolbar_widget(QWidget):
     def node_edit_buttons(self):
         self.exit_node_button = QPushButton('')
         self.exit_node_button.setIcon(
-            QIcon('{}/icons/icon_exitnode.png'.format(get_vina_path())))
+            QIcon('{}/icon_exitnode.png'.format(icons_path)))
         self.exit_node_button.setToolTip('Exit from Node')
         self.exit_node_button.clicked.connect(self.parent.exit_node)
 
         self.restore_script_button = QPushButton()
         self.restore_script_button.setIcon(
-            QIcon('{}/icons/icon_download.png'.format(get_vina_path())))
+            QIcon('{}/icon_download.png'.format(icons_path)))
         self.restore_script_button.setToolTip('Restore original Script')
         self.restore_script_button.clicked.connect(self.parent.restore)
 
         self.save_script_button = QPushButton()
         self.save_script_button.setIcon(
-            QIcon('{}/icons/icon_save.png'.format(get_vina_path())))
+            QIcon('{}/icon_save.png'.format(icons_path)))
         self.save_script_button.setToolTip('Save Script to Node')
         self.save_script_button.clicked.connect(self.parent.save)
 
@@ -118,7 +119,7 @@ class toolbar_widget(QWidget):
             del child
 
     def add_page(self, page):
-        icon = QIcon('{}/icons/develop.png'.format(get_vina_path()))
+        icon = QIcon('{}/develop.png'.format(icons_path))
 
         self.page_button = QPushButton()
         self.page_button.setObjectName(str(page))
