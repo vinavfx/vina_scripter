@@ -32,6 +32,15 @@ import vina_scripter
 
 # Screenshots
 
+- <b>TABS</b>
+
+![Alt text](screenshots/tabs.jpg?raw=true "Optional Title")
+
+
+- <b>COMMAND LINE</b> 
+
+![Alt text](screenshots/command_line.jpg?raw=true "Optional Title")
+
 - <b>NORMAL</b> Mode
 
 ![Alt text](screenshots/normal_mode.jpg?raw=true "Optional Title")
@@ -47,10 +56,6 @@ import vina_scripter
 - <b>VISUAL LINE</b> Mode
 
 ![Alt text](screenshots/visual_line_mode.jpg?raw=true "Optional Title")
-
-- <b>COMMAND LINE</b> 
-
-![Alt text](screenshots/command_line.jpg?raw=true "Optional Title")
 
 - <b>BLINKSCRIPT</b> Code
 
