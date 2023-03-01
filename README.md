@@ -1,6 +1,6 @@
 # Vina Scripter
 Python and Blinkscript editor for Nuke, based on the VIM editor,
-inspired by https://github.com/adrianpueyo/KnobScripter, but rewritten,
+inspired by <a href=https://github.com/adrianpueyo/KnobScripter target='_blank'>KnobScripter</a>, but rewritten,
 the idea that is simpler and more useful and without the option to edit external files,
 and just it will support Nuke with Python 3, not to dirty the code,
 to make it compatible with older nukes, do a Fork.
@@ -48,43 +48,42 @@ To use the editor without vim mode, press the 'Vim' button on the top right, and
 - <b>Ctrl+[</b> : Exit modes and exit selected words
 - <b>*</b> : Find word under cursor
 
-- For all shortcuts and commands see them here, https://vim.rtorr.com/
+- For all shortcuts and commands see them here, <a href=https://vim.rtorr.com target='_blank'>vim.rtorr.com</a>
 not all vim shortcuts are implemented in <b>Vina Scripter</b> !
 In this script are all available shortcuts, in case you want to change them at will.
-[keys_vim_mode.py](./src/vim/keys_vim_mode.py)
+<a href=./src/vim/keys_vim_mode.py target='_blank'>keys_vim_mode.py</a>
 
 
 # Screenshots
 
 - <b>TABS</b>
 
-![Alt text](screenshots/tabs.jpg?raw=true "Optional Title")
-
+![image](screenshots/tabs.jpg)
 
 - <b>COMMAND LINE</b> 
 
-![Alt text](screenshots/command_line.jpg?raw=true "Optional Title")
+![image](screenshots/command_line.jpg)
 
 - <b>NORMAL</b> Mode
 
-![Alt text](screenshots/normal_mode.jpg?raw=true "Optional Title")
+![image](screenshots/normal_mode.jpg)
 
 - <b>INSERT</b> Mode
 
-![Alt text](screenshots/insert_mode.jpg?raw=true "Optional Title")
+![image](screenshots/insert_mode.jpg)
 
 - <b>VISUAL</b> Mode
 
-![Alt text](screenshots/visual_mode.jpg?raw=true "Optional Title")
+![image](screenshots/visual_mode.jpg)
 
 - <b>VISUAL LINE</b> Mode
 
-![Alt text](screenshots/visual_line_mode.jpg?raw=true "Optional Title")
+![image](screenshots/visual_line_mode.jpg)
 
 - <b>BLINKSCRIPT</b> Code
 
-![Alt text](screenshots/blinkscript.jpg?raw=true "Optional Title")
+![image](screenshots/blinkscript.jpg)
 
 - <b>PYTHON</b> Code
 
-![Alt text](screenshots/python.jpg?raw=true "Optional Title")
+![image](screenshots/python.jpg)
