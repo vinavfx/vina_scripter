@@ -182,7 +182,7 @@ def init(self):
     }
 
     self.held_number = 0
-    self.copied = ''
+    self.copied = None
     self.key_words = ['def', 'class', 'if', 'elif', 'else',
                       'while', 'with', 'try', 'except', 'for']
 

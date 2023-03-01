@@ -74,9 +74,7 @@ def delete_towards_and_insert(self, cursor, param):
     else:
         select_towards(self, cursor, param)
 
-    self.copied = cursor.selectedText()
     cursor.removeSelectedText()
-
     cursor.endEditBlock()
 
     self.set_mode('insert')
@@ -84,6 +82,10 @@ def delete_towards_and_insert(self, cursor, param):
 
 def delete_selection(self, cursor, param):
     key = param['key']
+
+    text = cursor.selectedText()
+    multiline = True if len(text.splitlines()) > 1 else False
+    self.copied = (text, multiline)
 
     cursor.beginEditBlock()
     cursor.removeSelectedText()
@@ -141,6 +143,9 @@ def copy_selection(self, cursor, _):
 
 
 def paste(self, cursor, _):
+    if not self.copied:
+        return
+
     cursor.beginEditBlock()
     text, multiline = self.copied
 
