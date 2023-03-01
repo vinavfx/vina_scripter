@@ -19,6 +19,7 @@ to make it compatible with older nukes, do a Fork.
 git clone --recursive https://github.com/vinavfx/vina_scripter.git "~/.nuke/vina_scripter"
 
 # Windows
+# Download git: https://git-scm.com/download/win
 git clone --recursive https://github.com/vinavfx/vina_scripter.git "C:\Users\<username>\.nuke\vina_scripter"
 
 # Or manually copy the entire git downloaded folder and its submodules to the nuke user folder
