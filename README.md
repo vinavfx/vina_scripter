@@ -16,10 +16,10 @@ to make it compatible with older nukes, do a Fork.
 1 - Copy to nuke folder
 ```sh
 # Linux:
-git clone --recursive https://github.com/fcocc77/vina_scripter.git "~/.nuke/vina_scripter"
+git clone --recursive https://github.com/vinavfx/vina_scripter.git "~/.nuke/vina_scripter"
 
 # Windows
-git clone --recursive https://github.com/fcocc77/vina_scripter.git "C:\Users\<username>\.nuke\vina_scripter"
+git clone --recursive https://github.com/vinavfx/vina_scripter.git "C:\Users\<username>\.nuke\vina_scripter"
 
 # Or manually copy the entire git downloaded folder and its submodules to the nuke user folder
 ```
