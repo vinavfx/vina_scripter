@@ -17,21 +17,7 @@ from .vim_commenter_actions import *
 
 
 def init(self):
-    self.held_number = 0
-    self.copied = ''
-    self.key_words = ['def', 'class', 'if', 'elif', 'else',
-                      'while', 'with', 'try', 'except', 'for']
-
-    self.first_held_key = None
-    self.second_held_key = None
-    self.third_held_key = None
-    self.fourth_held_key = None
-
-    self.undo_cursor_position = -1
-    self.redo_cursor_position = -1
-
-    self.leader = False
-    self.leader_activation = 0
+    self.leader_key = Qt.Key_Comma
 
     self.normal_hotkeys = {
         'a': insert_next_char,
@@ -195,6 +181,23 @@ def init(self):
         'cu': (comment_selected_text, False, False),
     }
 
+    self.held_number = 0
+    self.copied = ''
+    self.key_words = ['def', 'class', 'if', 'elif', 'else',
+                      'while', 'with', 'try', 'except', 'for']
+
+    self.first_held_key = None
+    self.second_held_key = None
+    self.third_held_key = None
+    self.fourth_held_key = None
+
+    self.undo_cursor_position = -1
+    self.redo_cursor_position = -1
+
+    self.leader = False
+    self.leader_activation = 0
+
+
     self.abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
            'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
            's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -296,7 +299,7 @@ def key_press_event(self, event):
         else:
             ret = press(self, event, False, False, True)
 
-    elif ( key == Qt.Key_Comma and not self.mode == 'insert'):
+    elif ( key == self.leader_key and not self.mode == 'insert'):
         self.leader = True
         self.leader_activation = time()
 
