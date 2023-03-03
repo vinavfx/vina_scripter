@@ -28,6 +28,7 @@ git clone --recursive https://github.com/vinavfx/vina_scripter.git "C:\Users\<us
 2 - Copy this line to <b>menu.py</b>
 ```python
 import vina_scripter
+vina_scripter.setup()
 ```
 
 # Basic Use
