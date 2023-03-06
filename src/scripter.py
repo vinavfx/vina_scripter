@@ -77,7 +77,7 @@ class scripter_widget(panel_widget):
             'Edit/Node/Edit Script ( Knob Scripter )', self.enter_node, 'alt+z')
 
         nuke.menu('Animation').addCommand(
-            'Python Expression', 'vina_scripter.vina_scripter.scripter.main_widget.edit_python_expression()')
+            'Python Expression', 'nuke.panels["vina_scripter"]().edit_python_expression()')
 
         nuke.addOnDestroy(lambda: self.exit_node(True)
                           if nuke.thisNode() == self.current_node else None)
