@@ -5,6 +5,8 @@ the idea that is simpler and more useful and without the option to edit external
 and just it will support Nuke with Python 3, not to dirty the code,
 to make it compatible with older nukes, do a Fork.
 
+Showing: <a href=https://vinavfx.com/blog target='_blank'>https://vinavfx.com/blog</a>
+
 
 # Feautres
 - Edit <b>Temporary Scripts</b> to make it work and create ':tabnew' tabs and close them 'tabclose'
