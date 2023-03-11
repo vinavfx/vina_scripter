@@ -279,6 +279,8 @@ def key_press_event(self, event):
     key = event.key()
     ret = 0
 
+    first_held_key = self.first_held_key[0] if self.first_held_key else ''
+
     if (time() - self.leader_activation) > 1:
         self.leader = False
 
@@ -299,7 +301,9 @@ def key_press_event(self, event):
         else:
             ret = press(self, event, False, False, True)
 
-    elif ( key == self.leader_key and not self.mode == 'insert'):
+    elif (key == self.leader_key
+          and not self.mode == 'insert'
+          and not first_held_key in [ 'f', 'F' ]):
         self.leader = True
         self.leader_activation = time()
 
