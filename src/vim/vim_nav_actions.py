@@ -13,10 +13,19 @@ from .vim_common_actions import fill_selection_blocks
 def select_towards(self, cursor, param):
     key = param['key'].lower()
     second_key = param['hotkey']['second_key']
+    shift = param['event'].modifiers() == Qt.ShiftModifier
 
     param['anchor'] = QTextCursor.KeepAnchor
 
-    if key == '0':
+    if shift and key == 'g':
+        goto_end(self, cursor, param)
+        fill_selection_blocks(cursor)
+
+    elif key == 'g' and second_key == 'g':
+        goto_start(self, cursor, param)
+        fill_selection_blocks(cursor)
+
+    elif key == '0':
         goto_start_of_line(self, cursor, param)
 
     elif key == '_':

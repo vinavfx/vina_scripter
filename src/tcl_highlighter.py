@@ -7,8 +7,8 @@ from .blink_highlighter import onedark
 
 
 class tcl_highlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent=None):
-        super(tcl_highlighter, self).__init__(parent)
+    def __init__(self):
+        super(tcl_highlighter, self).__init__(None)
         self.styles = self.load_style()
 
     def load_style(self):
@@ -27,16 +27,19 @@ class tcl_highlighter(QtGui.QSyntaxHighlighter):
         tri_double = (QtCore.QRegExp('"""'), 2, green)
 
         main_keywords = [
-            'return', 'proc', 'for', 'while', 'if', 'else'
+            "proc", "if", "while", "for", "foreach", "switch", "string",
+            "list", "array", "catch", "return", "puts", "source", "incr", "rename",
+            "continue", "unset", "append", "lindex", "incr", "concat", "regexp", "join",
+            "format", "open", "close", "info", "eof", "seek", "else"
         ]
 
         keywords = [
-            'set', 'expr', 'puts', 'x', 'abs', 'acos', 'asin', 'atan', 'atan2',
+            'set', 'expr', 'puts', 'exists', 'x', 'abs', 'acos', 'asin', 'atan', 'atan2',
             'ceil', 'clamp', 'cos', 'cosh', 'degrees', 'exp', 'exponent', 'fBm',
             'fabs', 'floor', 'fmod', 'frame', 'hypot', 'int', 'ldexp', 'lerp',
             'log', 'log10', 'logb', 'mantissa', 'max', 'min', 'mix', 'noise', 'pi',
             'pow', 'pow2', 'radians', 'random', 'rint', 'sin', 'sinh', 'smoothstep',
-            'sqrt', 'step', 'tan', 'tanh', 'trunc', 'turbulence', 'y'
+            'sqrt', 'step', 'tan', 'tanh', 'trunc', 'turbulence', 'y', 'exists'
         ]
 
         rules = []
@@ -58,9 +61,11 @@ class tcl_highlighter(QtGui.QSyntaxHighlighter):
 
         # Objects
         rules += [(r'\w+(?=\.)', 0, cyan)]
+        rules += [(r'\b\d+\.\d+\b', 0, orange)] # omit float numbers
 
         # Variables
         rules += [(r'\$\w+', 0, pink)]
+        rules += [(r'\$::\w+', 0, pink)]
 
         # Comments
         rules += [(r'#[^\n]*', 0, gray)]
