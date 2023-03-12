@@ -128,8 +128,8 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         singletons = ['True', 'False', 'None']
 
         if 'comment' in styles:
-            tri_single = (QtCore.QRegExp("'''"), 1, styles['comment'])
-            tri_double = (QtCore.QRegExp('"""'), 2, styles['comment'])
+            tri_single = (QtCore.QRegExp("'''"), 1, styles['string'])
+            tri_double = (QtCore.QRegExp('"""'), 2, styles['string'])
         else:
             tri_single = (QtCore.QRegExp("'''"), 1, base_format)
             tri_double = (QtCore.QRegExp('"""'), 2, base_format)

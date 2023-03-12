@@ -198,11 +198,14 @@ class code_editor(QPlainTextEdit):
 
 
     def set_line_error(self, line_number):
+
         textOption = QTextOption()
         textOption.setWrapMode(QTextOption.NoWrap)
         self.document().setDefaultTextOption(textOption)
 
         cursor = self.textCursor()
+        pos = cursor.position()
+
         cursor.movePosition(cursor.Start)
         cursor.movePosition(cursor.Down, cursor.MoveAnchor, line_number - 1)
         self.setTextCursor(cursor)
@@ -212,10 +215,13 @@ class code_editor(QPlainTextEdit):
             QTextOption.NoWrap if self.parent.vim_mode else QTextOption.WordWrap)
         self.document().setDefaultTextOption(textOption)
 
-        center_cursor(self, cursor)
+        cursor = center_cursor(self, cursor)
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
 
         self.error_line = True
         self.highlight_current_line()
+
 
     def highlight_current_line(self):
         selection = QTextEdit.ExtraSelection()

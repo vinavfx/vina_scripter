@@ -14,6 +14,7 @@ import nuke
 
 from .python_highlighter import KSPythonHighlighter
 from .blink_highlighter import KSBlinkHighlighter
+from .tcl_highlighter import tcl_highlighter
 from .editor import editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
@@ -59,9 +60,11 @@ class scripter_widget(panel_widget):
         self.current_knob = None
         self.modified_knob = False
 
-        self.python_syntax = True
+        self.syntax = 'python'
         self.python_highlight = KSPythonHighlighter()
         self.blink_highlight = KSBlinkHighlighter()
+        self.tcl_highlight = tcl_highlighter()
+
         self.python_highlight.setDocument(self.editor.editor.document())
 
         self.last_knob_name = ''
@@ -214,21 +217,37 @@ class scripter_widget(panel_widget):
         python_knobs = []
         py_buttons = []
         py_expressions = []
+        tcl_expressions = []
 
         for _, knob in node.knobs().items():
             if knob.Class() == 'PythonKnob' or knob.Class() == 'PythonCustomKnob':
                 python_knobs.append(knob)
 
-            if knob.Class() == 'PyScript_Knob':
+            elif knob.Class() == 'PyScript_Knob':
                 py_buttons.append(knob)
 
-            if self.is_python_expression(knob):
+            elif self.is_python_expression(knob):
                 py_expressions.append(knob)
 
-        return py_buttons, python_knobs, py_expressions
+            elif self.is_tcl_expression(knob):
+                tcl_expressions.append(knob)
+
+        return py_buttons, python_knobs, py_expressions, tcl_expressions
 
     def is_python_expression(self, knob):
+        if not knob.hasExpression():
+            return False
+
         return 'python -execlocal' in knob.toScript()
+
+    def is_tcl_expression(self, knob):
+        if not knob.hasExpression():
+            return False
+
+        if self.is_python_expression(knob):
+            return False
+
+        return True
 
     def editor_changed(self):
         self.set_modified_knob(True)
@@ -238,6 +257,15 @@ class scripter_widget(panel_widget):
             return ''
 
         exp = knob.toScript().split('python -execlocal ')[-1][:-3]
+        exp = exp.replace("\\n", "\n").replace("\\", "")
+
+        return exp
+
+    def get_tcl_expression(self, knob):
+        if not self.is_tcl_expression(knob):
+            return ''
+
+        exp = knob.toScript().split('[', 1)[1].rsplit(']', 1)[0]
         exp = exp.replace("\\n", "\n").replace("\\", "")
 
         return exp
@@ -256,7 +284,9 @@ class scripter_widget(panel_widget):
 
         knob.setExpression(exp)
 
-        return True
+    def set_tcl_expression(self, knob, code):
+        exp = '[' + code + ']'
+        knob.setExpression(exp)
 
     def knob_selector_changed(self, knob_name):
         if not self.current_node:
@@ -269,17 +299,22 @@ class scripter_widget(panel_widget):
         self.current_knob = self.current_node.knob(knob_name)
 
         py_expression = self.get_python_expression(self.current_knob)
+        tcl_expression = self.get_tcl_expression(self.current_knob)
         blink_source = self.get_blinkscript_source(self.current_knob)
 
         if blink_source:
             code = blink_source
         elif py_expression:
             code = py_expression
+        elif tcl_expression:
+            code = tcl_expression
         else:
             code = self.current_knob.value()
 
         cursor_name = self.current_node_name + self.current_knob.name()
-        self.set_code(code, cursor_name, not blink_source)
+
+        syntax = 'blink' if blink_source else 'tcl' if tcl_expression else 'python'
+        self.set_code(code, cursor_name, syntax)
 
 
     def enter_node(self):
@@ -308,7 +343,7 @@ class scripter_widget(panel_widget):
         node_name = 'Node: <b>{}</b>'.format(self.current_node.name())
         self.toolbar.current_node_label.setText(node_name)
 
-        py_buttons, python_knobs, py_expressions = self.get_py_knobs(
+        py_buttons, python_knobs, py_expressions, tcl_expression = self.get_py_knobs(
             self.current_node)
 
         if knob_expression:
@@ -317,6 +352,11 @@ class scripter_widget(panel_widget):
             self.toolbar.knob_selector.addItem(knob_expression.name())
 
         for knob in py_expressions:
+            if knob == knob_expression:
+                continue
+            self.toolbar.knob_selector.addItem(knob.name())
+
+        for knob in tcl_expression:
             if knob == knob_expression:
                 continue
             self.toolbar.knob_selector.addItem(knob.name())
@@ -358,13 +398,17 @@ class scripter_widget(panel_widget):
         else:
             set_color(save_script_button, QColor(75, 75, 75))
 
-    def set_code(self, code, cursor_name='', python_syntax=True):
-        if not python_syntax == self.python_syntax:
-            self.python_syntax = python_syntax
+    def set_code(self, code, cursor_name='', syntax='python'):
+        if not syntax == self.syntax:
+            self.syntax = syntax
             document = self.editor.editor.document()
 
-            if python_syntax:
+            if syntax == 'python':
                 self.python_highlight.setDocument(document)
+
+            elif syntax == 'tcl':
+                self.tcl_highlight.setDocument(document)
+
             else:
                 self.blink_highlight.setDocument(document)
 
@@ -384,7 +428,7 @@ class scripter_widget(panel_widget):
 
         if self.current_knob.Class() in self.python_knobs_list:
             if self.current_knob.name() == 'kernelSource':
-                self.set_code(self.current_knob.toScript(), cursor_name, False)
+                self.set_code(self.current_knob.toScript(), cursor_name, 'blink')
             else:
                 self.set_code(self.current_knob.value(), cursor_name)
         else:
@@ -405,8 +449,12 @@ class scripter_widget(panel_widget):
                 self.current_node.knob('recompile').execute()
             else:
                 self.current_knob.setValue(code)
-        else:
+
+        elif self.is_python_expression(self.current_knob):
             self.set_python_expression(self.current_knob, code)
+
+        else:
+            self.set_tcl_expression(self.current_knob, code)
 
         self.set_modified_knob(False)
 
@@ -459,7 +507,7 @@ class scripter_widget(panel_widget):
         if not code.strip():
             return
 
-        if not self.python_syntax and self.current_node:
+        if self.syntax == 'blink' and self.current_node:
             self.save()
             return
 
@@ -471,13 +519,16 @@ class scripter_widget(panel_widget):
         else:
             self.save_state()
 
-        code = "exec('''{}''')".format(
+        python_code = "exec('''{}''')".format(
             code.replace("\\", "\\\\").replace("'", "\\'"))
 
         print('# Result: ')
 
         try:
-            nuke.runIn(run_context, code)
+            if self.syntax == 'python':
+                nuke.runIn(run_context, python_code)
+            else:
+                print(nuke.tcl(code))
         except:
             tb = str(traceback.format_exc())
             self.console.add_output(tb)
