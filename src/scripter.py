@@ -582,15 +582,17 @@ class scripter_widget(panel_widget):
         error_console = self.get_nuke_error_console()
         error = error_console.toPlainText().strip() if error_console else ''
 
-        if code in self.tcl_errors:
-            print(self.tcl_errors[code])
+        key = re.sub('\\s+', ' ', code)
 
-        elif error_console and error:
+        if error_console and error:
             err = error.splitlines()[-1].split(':', 2)[-1]
             err = 'ERROR:{}'.format(err)
             print(err)
-            self.tcl_errors[code] = err
+            self.tcl_errors[key] = err
             error_console.clear()
+
+        elif key in self.tcl_errors:
+            print(self.tcl_errors[key])
 
         else:
             print(result)
