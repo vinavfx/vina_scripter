@@ -11,11 +11,8 @@ from PySide2.QtCore import Qt
 
 import nuke
 
-from .python_highlighter import KSPythonHighlighter
-from .blink_highlighter import KSBlinkHighlighter
-from .tcl_highlighter import tcl_highlighter
 from .editor import editor_widget
-from .script_output import get_nuke_console, output_widget
+from .script_output import output_widget
 from .toolbar import toolbar_widget
 
 from ..nuke_util.panels import panel_widget
@@ -47,7 +44,7 @@ class scripter_widget(panel_widget):
         splitter = QSplitter(Qt.Vertical)
         splitter.addWidget(self.console)
         splitter.addWidget(self.editor)
-        splitter.setSizes([splitter.height() * 0.35, splitter.height() * 0.65])
+        splitter.setSizes([splitter.height() * 0.25, splitter.height() * 0.75])
 
         layout.addWidget(self.toolbar)
         layout.addWidget(splitter)
@@ -59,13 +56,6 @@ class scripter_widget(panel_widget):
         self.current_knob = None
         self.modified_knob = False
         self.tcl_errors = {}
-
-        self.syntax = 'python'
-        self.python_highlight = KSPythonHighlighter()
-        self.blink_highlight = KSBlinkHighlighter()
-        self.tcl_highlight = tcl_highlighter()
-
-        self.python_highlight.setDocument(self.editor.editor.document())
 
         self.last_knob_name = ''
         self.state = {
@@ -446,20 +436,7 @@ class scripter_widget(panel_widget):
             set_color(save_script_button, QColor(75, 75, 75))
 
     def set_code(self, code, cursor_name='', syntax='python'):
-        if not syntax == self.syntax:
-            self.syntax = syntax
-            document = self.editor.editor.document()
-
-            if syntax == 'python':
-                self.python_highlight.setDocument(document)
-
-            elif syntax == 'tcl':
-                self.tcl_highlight.setDocument(document)
-
-            else:
-                self.blink_highlight.setDocument(document)
-
-        self.editor.set_code(code, cursor_name)
+        self.editor.set_code(code, cursor_name, syntax)
 
     def restore(self):
         if not self.current_knob:
@@ -631,10 +608,12 @@ class scripter_widget(panel_widget):
         if not code.strip():
             return
 
-        if self.syntax == 'blink' and self.current_node:
+        syntax = self.editor.get_syntax()
+
+        if syntax == 'blink' and self.current_node:
             self.save()
 
-        elif self.syntax == 'python':
+        elif syntax == 'python':
             self.execute_python(code)
 
         else:

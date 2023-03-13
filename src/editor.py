@@ -12,6 +12,10 @@ from .vim import keys_vim_mode
 from .vim.vim import vim_widget
 from .vim.vim_nav_actions import center_cursor
 
+from .python_highlighter import KSPythonHighlighter
+from .blink_highlighter import KSBlinkHighlighter
+from .tcl_highlighter import tcl_highlighter
+
 
 class editor_widget(QWidget):
     def __init__(self, parent):
@@ -27,6 +31,13 @@ class editor_widget(QWidget):
         self.vim = vim_widget(self)
 
         self.editor = code_editor(self)
+
+        self.python_highlight = KSPythonHighlighter()
+        self.blink_highlight = KSBlinkHighlighter()
+        self.tcl_highlight = tcl_highlighter()
+
+        self.syntax = 'python'
+        self.python_highlight.setDocument(self.editor.document())
 
         layout.addWidget(self.editor)
         layout.addWidget(self.vim)
@@ -48,7 +59,7 @@ class editor_widget(QWidget):
         else:
             self.editor.textChanged.disconnect()
 
-    def set_code(self, code, cursor_name=''):
+    def set_code(self, code, cursor_name='', syntax='python'):
         if self.current_cursor:
             self.cursors_pile[self.current_cursor] = self.editor.textCursor(
             ).position()
@@ -56,6 +67,7 @@ class editor_widget(QWidget):
         if not code == self.get_code():
             self.connect_changed(False)
             self.editor.setPlainText(code)
+            self.set_syntax(syntax)
 
         if not cursor_name == self.current_cursor and cursor_name in self.cursors_pile:
             pos = self.cursors_pile[cursor_name]
@@ -67,6 +79,25 @@ class editor_widget(QWidget):
 
         self.cursors_pile = {key: value for key,
                              value in self.cursors_pile.items() if value != 0}
+
+    def set_syntax(self, syntax):
+        if syntax == self.syntax:
+            return
+
+        self.syntax = syntax
+        document = self.editor.document()
+
+        if syntax == 'python':
+            self.python_highlight.setDocument(document)
+
+        elif syntax == 'tcl':
+            self.tcl_highlight.setDocument(document)
+
+        else:
+            self.blink_highlight.setDocument(document)
+
+    def get_syntax(self):
+        return self.syntax
 
     def get_code(self):
         return self.editor.toPlainText()

@@ -28,7 +28,7 @@ def comment_current_line(self, cursor, _, toggle=True, comment=None):
 
 
 def comment_syntax(self):
-    if self.parent.parent.syntax == 'blink':
+    if self.parent.get_syntax() == 'blink':
         char_comment = '//'
     else:
         char_comment = '#'
