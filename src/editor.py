@@ -44,39 +44,42 @@ class multi_editor_widget(QWidget):
         layout.addWidget(splitter)
         layout.addWidget(self.vim)
 
-        self.set_dimensions(1)
+        self.set_dimensions()
 
-    def set_dimensions(self, dimensions):
-        for i in range(4):
-            self.editors[i].hide()
+    def set_dimensions(self, d1=True, d2=False, d3=False, d4=False):
 
-        for i in range(dimensions):
-            self.editors[i].show()
+        self.editors[0].setVisible(d1)
+        self.editors[1].setVisible(d2)
+        self.editors[2].setVisible(d3)
+        self.editors[3].setVisible(d4)
 
     def set_code(self, code, cursor_name='', syntax='python', dimension=0):
-        if dimension == 0:
-            self.editors[0].set_code(code, cursor_name, syntax)
+        self.editors[dimension].set_code(code, cursor_name, syntax)
 
     def set_vim_mode(self, vim_mode, dimension=0):
         self.vim_mode = vim_mode
         self.vim.setVisible(vim_mode)
 
-        if dimension == 0:
-            self.editors[0].set_vim_mode(vim_mode)
+        self.editors[dimension].set_vim_mode(vim_mode)
+
+    def get_focus_dimension(self):
+        for d, editor in enumerate(self.editors):
+            if editor.editor.hasFocus():
+                return d
+
+        return 0
 
     def get_code(self, dimension=0):
-        if dimension == 0:
-            return self.editors[0].get_code()
-
-        return ''
+        return self.editors[dimension].get_code()
 
     def set_focus(self, dimension=0):
-        if dimension == 0:
-            self.editors[0].editor.setFocus()
+        self.editors[dimension].editor.setFocus()
 
     def get_syntax(self, dimension=0):
-        if dimension == 0:
-            return self.editors[0].get_syntax()
+        return self.editors[dimension].get_syntax()
+
+    def set_line_error(self, line_number, dimension=0):
+        self.editors[dimension].set_line_error(line_number)
 
 
 class editor_widget(QWidget):
@@ -299,7 +302,7 @@ class code_editor(QPlainTextEdit):
 
         textOption = QTextOption()
         textOption.setWrapMode(
-            QTextOption.NoWrap if self.parent.vim_mode else QTextOption.WordWrap)
+            QTextOption.NoWrap if self.parent.parent.vim_mode else QTextOption.WordWrap)
         self.document().setDefaultTextOption(textOption)
 
         cursor = center_cursor(self, cursor)
