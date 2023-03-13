@@ -8,7 +8,7 @@ from .blink_highlighter import onedark
 
 class tcl_highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self):
-        super(tcl_highlighter, self).__init__(None)
+        super().__init__(None)
         self.styles = self.load_style()
 
     def load_style(self):

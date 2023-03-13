@@ -16,6 +16,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
     """
 
     def __init__(self, style="monokai"):
+        super().__init__(None)
 
         self.selected_text = ""
         self.selected_text_prev = ""
@@ -25,9 +26,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         self.styles = self.loadStyles()  # Holds a dict for each style
         self._style = style  # Can be set via setStyle
         self.setStyle(self._style)  # Set default style
-        # self.updateStyle()  # Load ks color scheme
 
-        super(KSPythonHighlighter, self).__init__(None)
 
     def loadStyles(self):
         """ Loads the different sets of rules """

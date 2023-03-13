@@ -20,11 +20,11 @@ onedark = {
 class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
 
     def __init__(self,  style="default"):
+        super().__init__(None)
         self.styles = self.loadStyles()
         self._style = style
         self._style = "default"
 
-        super(KSBlinkHighlighter, self).__init__(None)
 
     def loadStyles(self):
         styles = dict()
