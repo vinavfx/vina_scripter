@@ -11,7 +11,7 @@ from PySide2.QtCore import Qt
 
 import nuke
 
-from .editor import editor_widget
+from .editor import multi_editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
 
@@ -36,7 +36,7 @@ class scripter_widget(panel_widget):
         ctrl_s_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         ctrl_s_shortcut.activatedAmbiguously.connect(self.save)
 
-        self.editor = editor_widget(self)
+        self.editor = multi_editor_widget(self)
 
         self.console = output_widget(self)
         self.toolbar = toolbar_widget(self)
@@ -412,7 +412,7 @@ class scripter_widget(panel_widget):
         self.set_modified_knob(False)
 
         self.toolbar.node_edit_mode(True)
-        self.editor.editor.setFocus()
+        self.editor.set_focus()
 
     def set_modified_knob(self, modified):
         if self.modified_knob == modified:

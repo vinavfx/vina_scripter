@@ -5,7 +5,7 @@ from PySide2.QtGui import QTextCursor
 
 
 def search(self, cursor, _):
-    self.parent.vim.write_command('/')
+    self.parent.parent.vim.write_command('/')
     return cursor
 
 

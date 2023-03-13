@@ -60,8 +60,8 @@ def init(self):
         'e': goto_end_of_word,
         'f?': goto_char,
         'gg': goto_start,
-        'gt': lambda: self.parent.parent.next_script_page(),
-        'gT': lambda: self.parent.parent.previous_script_page(),
+        'gt': lambda: self.parent.parent.parent.next_script_page(),
+        'gT': lambda: self.parent.parent.parent.previous_script_page(),
         'gUaw': change_case_word,
         'guaw': (change_case_word, False),
         'h': goto_left,
@@ -292,7 +292,7 @@ def key_press_event(self, event):
 
     if key == Qt.Key_Escape:
         if self.mode == 'normal':
-            self.parent.parent.exit_node()
+            self.parent.parent.parent.exit_node()
 
         elif self.mode in ['visual', 'visual_line', 'insert']:
             self.set_mode('normal')

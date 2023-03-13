@@ -19,7 +19,7 @@ class vim_widget(QWidget):
 
         self.mode_label = QLabel('NORMAL')
         self.command_line = QLineEdit()
-        self.command_line.setFont(QFont(self.parent.parent.fonts[2], 9))
+        self.command_line.setFont(QFont(self.parent.fonts[2], 9))
 
         self.command_line.setToolTip('w : Save script to node\n'
                                      'wq : Save and Exit\n'
@@ -66,7 +66,7 @@ class vim_widget(QWidget):
 
         if ctrl and key == Qt.Key_BracketLeft or key == Qt.Key_Escape:
             self.command_line.clear()
-            self.parent.editor.setFocus()
+            self.parent.set_focus()
             return
 
         if (ctrl and key == Qt.Key_Return
@@ -76,7 +76,7 @@ class vim_widget(QWidget):
 
             self.run_command()
             self.command_line.clear()
-            self.parent.editor.setFocus()
+            self.parent.set_focus()
             return
 
         QWidget.keyPressEvent(self, event)
@@ -176,8 +176,8 @@ class vim_widget(QWidget):
         prefix = self.command_line.text()[:1]
 
         if prefix == '/':
-            self.parent.editor.is_search = True
-            self.parent.editor.highlight_word(command)
+            self.parent.editors[0].editor.is_search = True
+            self.parent.editors[0].editor.highlight_word(command)
 
         elif command.isdigit():
             self.go_to_line(int(command))

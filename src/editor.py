@@ -3,8 +3,8 @@
 # Website: vinavfx.com
 import nuke
 
-from PySide2.QtGui import QFont, QTextOption, QColor, QPainter, QTextFormat, QPalette, QTextCursor, QPen
-from PySide2.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QWidget, QVBoxLayout
+from PySide2.QtGui import QFont, QTextOption, QColor, QPainter, QTextFormat, QPalette, QTextCursor
+from PySide2.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QWidget, QVBoxLayout, QSplitter
 from PySide2.QtCore import Qt, QRect, QRegExp
 
 from .keys_normal_mode import key_press_event as normal_key_press_event
@@ -17,6 +17,68 @@ from .blink_highlighter import KSBlinkHighlighter
 from .tcl_highlighter import tcl_highlighter
 
 
+class multi_editor_widget(QWidget):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+        layout = QVBoxLayout()
+        layout.setMargin(0)
+        layout.setSpacing(0)
+        self.setLayout(layout)
+
+        self.fonts = ['Consolas', 'Courier New', 'Inconsolata']
+
+        self.vim_mode = False
+        self.vim = vim_widget(self)
+
+        splitter = QSplitter(Qt.Vertical)
+
+        self.editors = []
+        for _ in range(4):
+            editor = editor_widget(self)
+            editor.hide()
+            splitter.addWidget(editor)
+            self.editors.append(editor)
+
+        layout.addWidget(splitter)
+        layout.addWidget(self.vim)
+
+        self.set_dimensions(1)
+
+    def set_dimensions(self, dimensions):
+        for i in range(4):
+            self.editors[i].hide()
+
+        for i in range(dimensions):
+            self.editors[i].show()
+
+    def set_code(self, code, cursor_name='', syntax='python', dimension=0):
+        if dimension == 0:
+            self.editors[0].set_code(code, cursor_name, syntax)
+
+    def set_vim_mode(self, vim_mode, dimension=0):
+        self.vim_mode = vim_mode
+        self.vim.setVisible(vim_mode)
+
+        if dimension == 0:
+            self.editors[0].set_vim_mode(vim_mode)
+
+    def get_code(self, dimension=0):
+        if dimension == 0:
+            return self.editors[0].get_code()
+
+        return ''
+
+    def set_focus(self, dimension=0):
+        if dimension == 0:
+            self.editors[0].editor.setFocus()
+
+    def get_syntax(self, dimension=0):
+        if dimension == 0:
+            return self.editors[0].get_syntax()
+
+
 class editor_widget(QWidget):
     def __init__(self, parent):
         QWidget.__init__(self)
@@ -26,9 +88,6 @@ class editor_widget(QWidget):
         layout.setMargin(0)
         layout.setSpacing(0)
         self.setLayout(layout)
-
-        self.vim_mode = False
-        self.vim = vim_widget(self)
 
         self.editor = code_editor(self)
 
@@ -40,7 +99,6 @@ class editor_widget(QWidget):
         self.python_highlight.setDocument(self.editor.document())
 
         layout.addWidget(self.editor)
-        layout.addWidget(self.vim)
 
         self.cursors_pile = {}
         self.current_cursor = ''
@@ -55,7 +113,7 @@ class editor_widget(QWidget):
         self.text_changed_connected = connect
 
         if connect:
-            self.editor.textChanged.connect(self.parent.editor_changed)
+            self.editor.textChanged.connect(self.parent.parent.editor_changed)
         else:
             self.editor.textChanged.disconnect()
 
@@ -106,8 +164,6 @@ class editor_widget(QWidget):
         self.editor.set_line_error(line_number)
 
     def set_vim_mode(self, vim_mode):
-        self.vim_mode = vim_mode
-        self.vim.setVisible(vim_mode)
         self.editor.number_area.set_vim_mode(vim_mode)
 
         textOption = QTextOption()
@@ -197,14 +253,14 @@ class code_editor(QPlainTextEdit):
         key = event.key()
 
         if ctrl and (key == Qt.Key_M or key == Qt.Key_Return):
-            self.parent.parent.execute_script()
+            self.parent.parent.parent.execute_script()
             return
 
         elif ctrl and key == Qt.Key_Backspace:
-            self.parent.parent.clean_output_console()
+            self.parent.parent.parent.clean_output_console()
             return
 
-        elif self.parent.vim_mode:
+        elif self.parent.parent.vim_mode:
             return keys_vim_mode.key_press_event(self, event)
 
         else:
@@ -217,7 +273,7 @@ class code_editor(QPlainTextEdit):
         self.number_area.setGeometry(rect)
 
     def set_mode(self, mode):
-        self.parent.vim.set_mode(mode)
+        self.parent.parent.vim.set_mode(mode)
         self.mode = mode
 
         if mode == 'normal':

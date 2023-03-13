@@ -144,7 +144,7 @@ def visual_line(self, cursor, _):
 
 
 def write_command(self, cursor, _):
-    self.parent.vim.write_command(':')
+    self.parent.parent.vim.write_command(':')
     return cursor
 
 
