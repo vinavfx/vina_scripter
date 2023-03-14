@@ -121,6 +121,8 @@ def init(self):
         '<<': indent_line_to_left,
         '>>': indent_line_to_right,
 
+        'ctrl+wk': lambda: self.parent.parent.goto_upper_code(),
+        'ctrl+wj': lambda: self.parent.parent.goto_lower_code(),
         'ctrl+d': jump_down,
         'ctrl+e': scroll_down,
         'ctrl+h': goto_left,

@@ -35,8 +35,8 @@ class multi_editor_widget(QWidget):
         splitter = QSplitter(Qt.Vertical)
 
         self.editors = []
-        for _ in range(4):
-            editor = editor_widget(self)
+        for i in range(4):
+            editor = editor_widget(self, i)
             editor.hide()
             splitter.addWidget(editor)
             self.editors.append(editor)
@@ -44,6 +44,7 @@ class multi_editor_widget(QWidget):
         layout.addWidget(splitter)
         layout.addWidget(self.vim)
 
+        self.focus_dimension = 0
         self.set_dimensions()
 
     def set_dimensions(self, d1=True, d2=False, d3=False, d4=False):
@@ -52,6 +53,35 @@ class multi_editor_widget(QWidget):
         self.editors[1].setVisible(d2)
         self.editors[2].setVisible(d3)
         self.editors[3].setVisible(d4)
+
+    def goto_upper_code(self):
+        dimension = self.focus_dimension - 1
+
+        for _ in range(4):
+            if dimension < 0:
+                dimension = 0
+
+            if self.editors[dimension].isVisible():
+                break
+            else:
+                dimension -= 1
+
+        self.set_focus(dimension)
+
+
+    def goto_lower_code(self):
+        dimension = self.focus_dimension + 1
+
+        for _ in range(4):
+            if dimension > 3:
+                dimension = 3
+
+            if self.editors[dimension].isVisible():
+                break
+            else:
+                dimension += 1
+
+        self.set_focus(dimension)
 
     def set_code(self, code, cursor_name='', syntax='python', dimension=0):
         self.editors[dimension].set_code(code, cursor_name, syntax)
@@ -63,16 +93,15 @@ class multi_editor_widget(QWidget):
         self.editors[dimension].set_vim_mode(vim_mode)
 
     def get_focus_dimension(self):
-        for d, editor in enumerate(self.editors):
-            if editor.editor.hasFocus():
-                return d
-
-        return 0
+        return self.focus_dimension
 
     def get_code(self, dimension=0):
         return self.editors[dimension].get_code()
 
-    def set_focus(self, dimension=0):
+    def set_focus(self, dimension=-1):
+        if dimension == -1:
+            dimension = self.focus_dimension
+
         self.editors[dimension].editor.setFocus()
 
     def get_syntax(self, dimension=0):
@@ -83,9 +112,10 @@ class multi_editor_widget(QWidget):
 
 
 class editor_widget(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, index=0):
         QWidget.__init__(self)
         self.parent = parent
+        self.index = index
 
         layout = QVBoxLayout()
         layout.setMargin(0)
@@ -220,6 +250,7 @@ class code_editor(QPlainTextEdit):
         self.backup_nuke_shortcut = []
 
     def focusInEvent(self, event):
+        self.parent.parent.focus_dimension = self.parent.index
         self.disable_nuke_shortcut()
         super().focusInEvent(event)
 

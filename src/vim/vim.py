@@ -176,8 +176,9 @@ class vim_widget(QWidget):
         prefix = self.command_line.text()[:1]
 
         if prefix == '/':
-            self.parent.editors[0].editor.is_search = True
-            self.parent.editors[0].editor.highlight_word(command)
+            dimension = self.parent.get_focus_dimension()
+            self.parent.editors[dimension].editor.is_search = True
+            self.parent.editors[dimension].editor.highlight_word(command)
 
         elif command.isdigit():
             self.go_to_line(int(command))

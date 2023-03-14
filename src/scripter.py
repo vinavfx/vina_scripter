@@ -57,6 +57,8 @@ class scripter_widget(panel_widget):
         self.modified_knob = False
         self.tcl_errors = {}
 
+        self.activated_knob_changed = True
+
         self.last_knob_name = ''
         self.state = {
             'pages': [''],
@@ -78,6 +80,8 @@ class scripter_widget(panel_widget):
         nuke.addOnDestroy(lambda: self.exit_node(True)
                           if nuke.thisNode() == self.current_node else None)
 
+        nuke.addKnobChanged(self.knob_changed)
+
         nuke.addOnScriptClose(lambda: self.save_state(False))
 
         self.state_file = '{}/vina_scripter_state.json'.format(get_nuke_path())
@@ -94,6 +98,20 @@ class scripter_widget(panel_widget):
             self.set_script_page(self.state['current_page'])
 
         jwrite(self.state_file, self.state)
+
+    def knob_changed(self):
+        if not self.current_knob == nuke.thisKnob():
+            return
+
+        if not self.current_knob:
+            return
+
+        if not self.activated_knob_changed:
+            return
+
+        node = self.current_node
+        self.exit_node()
+        self.enter(node)
 
     def restore_state(self):
         if self.restored_state:
@@ -336,7 +354,9 @@ class scripter_widget(panel_widget):
             else:
                 exp = code
 
+        self.activated_knob_changed = False
         knob.setExpression(exp, dimension)
+        self.activated_knob_changed = True
 
 
     def knob_selector_changed(self, knob_name):
