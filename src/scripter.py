@@ -72,10 +72,10 @@ class scripter_widget(panel_widget):
             'Edit/Node/Edit Script ( Knob Scripter )', self.enter_node, 'alt+z')
 
         nuke.menu('Animation').addCommand(
-            'Python Expression', 'nuke.panels["vina_scripter"]().edit_expression("python")')
+            'Python Expression', 'nuke.panels["vina_scripter"]().edit_expression()')
 
         nuke.menu('Animation').addCommand(
-            'Tcl Expression', 'nuke.panels["vina_scripter"]().edit_expression("tcl")')
+            'Tcl Expression', 'nuke.panels["vina_scripter"]().edit_expression(True)')
 
         nuke.addOnDestroy(lambda: self.exit_node(True)
                           if nuke.thisNode() == self.current_node else None)
@@ -222,8 +222,22 @@ class scripter_widget(panel_widget):
 
         self.set_script_page(page)
 
-    def edit_expression(self, syntax):
-        self.enter(nuke.thisNode(), nuke.thisKnob(), syntax)
+    def edit_expression(self, tcl=False):
+        knob = nuke.thisKnob()
+
+        dimension = self.thisDimension()
+        is_tcl = self.is_tcl_expression(knob, dimension)
+
+        if not is_tcl == tcl and knob.hasExpression(dimension):
+            msg = 'A {} expression already exists, do you want to replace it with {}?'.format(
+                'tcl' if is_tcl else 'python',
+                'python' if is_tcl else 'tcl')
+
+            if nuke.ask(msg):
+                knob.clearAnimated(dimension)
+
+        syntax = 'tcl' if tcl else 'python'
+        self.enter(nuke.thisNode(), knob, syntax, dimension)
 
     def get_py_knobs(self, node):
         python_knobs = []
@@ -381,7 +395,7 @@ class scripter_widget(panel_widget):
             codes = expression
 
         else:
-            codes[0] = {'value': self.current_knob.value(), 'syntax': 'python'}
+            codes[0] = {'value': str( self.current_knob.value() ), 'syntax': 'python'}
 
         cursor_name = self.current_node_name + self.current_knob.name()
 
@@ -435,7 +449,7 @@ class scripter_widget(panel_widget):
 
         return dimension
 
-    def enter(self, node, knob_expression=None, expr_syntax='python'):
+    def enter(self, node, knob_expression=None, expr_syntax='python', dimension=-1):
         if not self.exit_node(False, False):
             return
 
@@ -450,11 +464,10 @@ class scripter_widget(panel_widget):
             self.current_node)
 
         if knob_expression:
-            dimension = self.thisDimension()
-
             if not knob_expression.hasExpression(dimension):
-                dimension = self.thisDimension()
-                self.set_expression(knob_expression, '0',
+                self.set_expression(knob_expression,
+                                    str(knob_expression.value(
+                                        dimension if dimension >= 0 else 0)),
                                     expr_syntax, dimension)
 
             self.toolbar.knob_selector.addItem(knob_expression.name())
