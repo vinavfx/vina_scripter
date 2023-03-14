@@ -16,19 +16,19 @@ def key_press_event(self, event):
     pre_scroll = self.verticalScrollBar().value()
 
     if alt and key == Qt.Key_1:
-        self.parent.parent.set_script_page(0)
+        self.parent.parent.parent.set_script_page(0)
         return
 
     elif alt and key == Qt.Key_2:
-        self.parent.parent.set_script_page(1)
+        self.parent.parent.parent.set_script_page(1)
         return
 
     elif alt and key == Qt.Key_3:
-        self.parent.parent.set_script_page(2)
+        self.parent.parent.parent.set_script_page(2)
         return
 
     elif key == Qt.Key_Escape:
-        self.parent.parent.exit_node()
+        self.parent.parent.parent.exit_node()
         return
 
     up_arrow = 16777235

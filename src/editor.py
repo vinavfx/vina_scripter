@@ -287,6 +287,9 @@ class code_editor(QPlainTextEdit):
         ctrl = event.modifiers() == Qt.ControlModifier
         key = event.key()
 
+        if key == Qt.Key_Escape:
+            super().keyPressEvent(event)
+
         if ctrl and (key == Qt.Key_M or key == Qt.Key_Return):
             self.parent.parent.parent.execute_script()
             return

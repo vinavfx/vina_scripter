@@ -6,7 +6,7 @@ import os
 import re
 
 from PySide2.QtGui import QColor, QKeySequence
-from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit
+from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit, QWidget
 from PySide2.QtCore import Qt
 
 import nuke
@@ -15,14 +15,14 @@ from .editor import multi_editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
 
-from ..nuke_util.panels import panel_widget
 from ..python_util.util import jread, jwrite
 from ..nuke_util.nuke_util import get_nuke_path
 
 
-class scripter_widget(panel_widget):
+class scripter_widget(QWidget):
     def __init__(self, parent=None):
-        panel_widget.__init__(self, parent)
+        super().__init__(parent)
+
         layout = QVBoxLayout()
         layout.setMargin(0)
         self.setLayout(layout)
@@ -91,7 +91,7 @@ class scripter_widget(panel_widget):
 
     def showEvent(self, event):
         self.restore_state()
-        return panel_widget.showEvent(self, event)
+        super().showEvent(event)
 
     def save_state(self, save_code=True):
         if save_code:

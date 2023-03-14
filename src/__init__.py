@@ -3,6 +3,7 @@ from . import (
     blink_highlighter,
     tcl_highlighter,
     scripter,
+    scripter_panel,
     editor,
     script_output,
     toolbar,
