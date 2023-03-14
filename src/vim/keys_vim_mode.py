@@ -357,7 +357,6 @@ def key_match(self, event, char):
 
 
 def validate_hotkey(self, event, _hotkey):
-
     modifiers, hotkey = _hotkey.split(
         '+', 1) if '+' in _hotkey else [False, _hotkey]
 
@@ -370,6 +369,10 @@ def validate_hotkey(self, event, _hotkey):
 
     shift_match = shift == (modifiers == 'shift')
     ctrl_match = ctrl == (modifiers == 'ctrl')
+
+    if any([self.first_held_key, self.second_held_key, self.third_held_key, self.fourth_held_key]):
+        if 'ctrl+' in _hotkey:
+            ctrl_match = True
 
     first_key = hotkey[0]
     second_key = hotkey[1] if len(hotkey) > 1 else ''

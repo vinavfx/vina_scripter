@@ -59,29 +59,26 @@ class multi_editor_widget(QWidget):
 
         for _ in range(4):
             if dimension < 0:
-                dimension = 0
+                return
 
             if self.editors[dimension].isVisible():
-                break
-            else:
-                dimension -= 1
+                self.set_focus(dimension)
+                return
 
-        self.set_focus(dimension)
-
+            dimension -= 1
 
     def goto_lower_code(self):
         dimension = self.focus_dimension + 1
 
         for _ in range(4):
             if dimension > 3:
-                dimension = 3
+                return
 
             if self.editors[dimension].isVisible():
-                break
-            else:
-                dimension += 1
+                self.set_focus(dimension)
+                return
 
-        self.set_focus(dimension)
+            dimension += 1
 
     def set_code(self, code, cursor_name='', syntax='python', dimension=0):
         self.editors[dimension].set_code(code, cursor_name, syntax)
