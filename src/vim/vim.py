@@ -82,7 +82,7 @@ class vim_widget(QWidget):
         QWidget.keyPressEvent(self, event)
 
     def retab(self):
-        editor = self.parent.editor
+        editor = self.parent.get_editor()
 
         def get_first_char_index(line_text):
             current = 0
@@ -160,15 +160,16 @@ class vim_widget(QWidget):
         editor.setTextCursor(cursor)
 
     def go_to_line(self, line):
-        cursor = self.parent.editor.textCursor()
+        editor = self.parent.get_editor()
+        cursor = editor.textCursor()
 
-        line_count = self.parent.editor.document().lineCount()
+        line_count = editor.document().lineCount()
         if line > line_count:
             line = line_count
 
-        cursor.setPosition(self.parent.editor.document(
-        ).findBlockByLineNumber(line - 1).position())
-        self.parent.editor.setTextCursor(cursor)
+        cursor.setPosition(
+            editor.document().findBlockByLineNumber(line - 1).position())
+        editor.setTextCursor(cursor)
 
     def run_command(self):
         command = self.command_line.text()[1:]
@@ -176,9 +177,9 @@ class vim_widget(QWidget):
         prefix = self.command_line.text()[:1]
 
         if prefix == '/':
-            dimension = self.parent.get_focus_dimension()
-            self.parent.editors[dimension].editor.is_search = True
-            self.parent.editors[dimension].editor.highlight_word(command)
+            editor = self.parent.get_editor()
+            editor.is_search = True
+            editor.highlight_word(command)
 
         elif command.isdigit():
             self.go_to_line(int(command))

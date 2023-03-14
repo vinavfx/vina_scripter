@@ -83,14 +83,18 @@ class multi_editor_widget(QWidget):
     def set_code(self, code, cursor_name='', syntax='python', dimension=0):
         self.editors[dimension].set_code(code, cursor_name, syntax)
 
-    def set_vim_mode(self, vim_mode, dimension=0):
+    def set_vim_mode(self, vim_mode):
         self.vim_mode = vim_mode
         self.vim.setVisible(vim_mode)
 
-        self.editors[dimension].set_vim_mode(vim_mode)
+        for editor in self.editors:
+            editor.set_vim_mode(vim_mode)
 
     def get_focus_dimension(self):
         return self.focus_dimension
+
+    def get_editor(self):
+        return self.editors[self.focus_dimension].editor
 
     def get_code(self, dimension=0):
         return self.editors[dimension].get_code()

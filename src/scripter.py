@@ -6,7 +6,7 @@ import os
 import re
 
 from PySide2.QtGui import QColor, QKeySequence
-from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit, QLabel
+from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit
 from PySide2.QtCore import Qt
 
 import nuke
@@ -436,7 +436,7 @@ class scripter_widget(panel_widget):
         return dimension
 
     def enter(self, node, knob_expression=None, expr_syntax='python'):
-        if not self.exit_node():
+        if not self.exit_node(False, False):
             return
 
         self.current_node = node
@@ -576,7 +576,7 @@ class scripter_widget(panel_widget):
         self.set_modified_knob(False)
         return True
 
-    def exit_node(self, force=False):
+    def exit_node(self, force=False, editor_focus=True):
         if not force:
             if not self.check_and_save():
                 return False
@@ -599,7 +599,10 @@ class scripter_widget(panel_widget):
 
         cursor_name = 'script_{}'.format(self.state['current_page'])
         self.set_code(self.get_script_current_page(), cursor_name)
+
         self.editor.set_dimensions()
+        if editor_focus:
+            self.editor.set_focus(0)
 
         return True
 
