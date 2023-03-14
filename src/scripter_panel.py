@@ -33,4 +33,8 @@ class float_scripter(float_panel_widget):
         self.resize(700, 700)
         self.center_window()
 
+    def closeEvent(self, event):
+        self.scripter.exit_node()
+        return super().closeEvent(event)
+
 

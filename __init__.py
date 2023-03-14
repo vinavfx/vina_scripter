@@ -48,25 +48,35 @@ def update_consoles():
     panel_widget = nuke.panels['vina_scripter']()
     float_widget = nuke.float_panels['vina_scripter']
 
-    panel_widget.scripter.console.update_output()
+    if panel_widget:
+        panel_widget.scripter.console.update_output()
+
     float_widget.scripter.console.update_output()
 
 
-def get_scripter():
+def get_scripter_panel():
     panel_widget = nuke.panels['vina_scripter']()
     float_widget = nuke.float_panels['vina_scripter']
 
-    if panel_widget.isVisible():
-        return panel_widget.scripter
+    if (panel_widget.isVisible() if panel_widget else False):
+        return panel_widget
     else:
-        float_widget.show()
-        float_widget.scripter.console.clear_all()
-        return float_widget.scripter
+        return float_widget
 
 
 def enter_node():
-    get_scripter().enter_node()
+    scripter_panel = get_scripter_panel()
+    node_inside = scripter_panel.scripter.enter_node()
+
+    if node_inside and not scripter_panel.isVisible():
+        scripter_panel.show()
+        scripter_panel.scripter.console.clear_all()
 
 
 def edit_expression(tcl=False):
-    get_scripter().edit_expression(tcl)
+    scripter_panel = get_scripter_panel()
+    scripter_panel.scripter.edit_expression(tcl)
+
+    if not scripter_panel.isVisible():
+        scripter_panel.show()
+        scripter_panel.scripter.console.clear_all()

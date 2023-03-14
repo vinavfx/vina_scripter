@@ -408,15 +408,16 @@ class scripter_widget(QWidget):
 
         if not nodes:
             nuke.message('Select only 1 node !')
-            return
+            return False
         if len(nodes) > 1:
             nuke.message('Select only 1 node !')
-            return
+            return False
 
         if not self.current_node:
             self.save_state()
 
         self.enter(nodes[0])
+        return True
 
     def thisDimension(self):
         focus_widget = QApplication.focusWidget()
@@ -535,10 +536,12 @@ class scripter_widget(QWidget):
         self.set_modified_knob(False)
 
     def save(self):
+        self.activated_knob_changed = False
         knob = self.current_knob
 
         if not knob or not self.current_node:
             self.save_state()
+            self.activated_knob_changed = True
             return
 
         if knob.Class() in self.python_knobs_list:
@@ -565,6 +568,7 @@ class scripter_widget(QWidget):
                     self.set_expression(self.current_knob, code, syntax, d)
 
         self.set_modified_knob(False)
+        self.activated_knob_changed = True
 
     def check_and_save(self):
         if not self.modified_knob:
@@ -574,7 +578,8 @@ class scripter_widget(QWidget):
             return False
 
         try:
-            if nuke.askWithCancel('The knob was modified, you want to save before exiting ?'):
+            ask = nuke.ask if self.float_panel else nuke.askWithCancel
+            if ask('The knob was modified, you want to save before exiting ?'):
                 self.save()
         except:
             return False
