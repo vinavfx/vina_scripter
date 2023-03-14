@@ -5,6 +5,8 @@ from PySide2.QtWidgets import QTextEdit, QApplication, QSplitter
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont, QTextCursor
 
+nuke_console = None
+
 
 def get_nuke_script_editor():
     for widget in QApplication.allWidgets():
@@ -13,6 +15,11 @@ def get_nuke_script_editor():
 
 
 def get_nuke_console():
+    global nuke_console
+
+    if nuke_console:
+        return nuke_console
+
     se = get_nuke_script_editor()
 
     if not se:
@@ -27,6 +34,7 @@ def get_nuke_console():
     splitter = splitter[0]
     for widget in splitter.children():
         if widget.metaObject().className() == 'Foundry::PythonUI::ScriptOutputWidget':
+            nuke_console = widget
             return widget
 
     return None
@@ -39,25 +47,19 @@ class output_widget(QTextEdit):
         self.setReadOnly(True)
         self.setFont(QFont(parent.fonts[2], 9))
 
-        self.nuke_console = get_nuke_console()
-        if not self.nuke_console:
-            return
-
-        self.nuke_console.textChanged.connect(self.update_output)
-        self.setText(self.nuke_console.toPlainText())
-
     def update_output(self):
-        if not self.nuke_console:
+        nuke_console = get_nuke_console()
+        if not nuke_console:
             return
 
         text1 = self.toPlainText()
-        text2 = self.nuke_console.toPlainText()
+        text2 = nuke_console.toPlainText()
 
         i = 0
         while i < len(text1) and i < len(text2) and text1[i] == text2[i]:
             i += 1
 
-        new_text = self.nuke_console.toPlainText()[i:]
+        new_text = nuke_console.toPlainText()[i:]
 
         text_cursor = self.textCursor()
         text_cursor.movePosition(QTextCursor.End)
@@ -67,17 +69,19 @@ class output_widget(QTextEdit):
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def clear_all(self):
-        if not self.nuke_console:
+        nuke_console = get_nuke_console()
+        if not nuke_console:
             return
 
         self.clear()
-        self.nuke_console.clear()
+        nuke_console.clear()
 
     def add_output(self, output):
-        if not self.nuke_console:
+        nuke_console = get_nuke_console()
+        if not nuke_console:
             return
 
-        self.nuke_console.append(output)
+        nuke_console.append(output)
 
     def keyPressEvent(self, event):
         ctrl = event.modifiers() == Qt.ControlModifier

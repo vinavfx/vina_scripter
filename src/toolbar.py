@@ -2,7 +2,7 @@
 # Office: VFX Artist - Senior Compositor
 # Website: vinavfx.com
 
-from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel, QCheckBox
+from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel
 from PySide2.QtGui import QIcon
 
 from ..nuke_util.nuke_util import get_nuke_path
@@ -22,7 +22,7 @@ class toolbar_widget(QWidget):
             QIcon('{}/icon_pick.png'.format(icons_path)))
         self.enter_node_button.setToolTip('Enter to Node')
         self.enter_node_button.clicked.connect(
-            lambda: parent.enter_node_menu.invoke())
+            lambda: self.parent.enter_node())
 
         exec_script_button = QPushButton()
         exec_script_button.setIcon(
@@ -67,7 +67,9 @@ class toolbar_widget(QWidget):
         self.exit_node_button.setIcon(
             QIcon('{}/icon_exitnode.png'.format(icons_path)))
         self.exit_node_button.setToolTip('Exit from Node')
-        self.exit_node_button.clicked.connect(self.parent.exit_node)
+        self.exit_node_button.clicked.connect(lambda: (
+            self.parent.exit_node(),
+            self.parent.parent.close() if self.parent.float_panel else None))
 
         self.restore_script_button = QPushButton()
         self.restore_script_button.setIcon(

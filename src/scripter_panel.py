@@ -15,8 +15,8 @@ class panel_scripter(panel_widget):
         layout.setMargin(0)
         self.setLayout(layout)
 
-        scripter = scripter_widget()
-        layout.addWidget(scripter)
+        self.scripter = scripter_widget(self)
+        layout.addWidget(self.scripter)
 
 
 class float_scripter(float_panel_widget):
@@ -24,11 +24,10 @@ class float_scripter(float_panel_widget):
         super().__init__()
 
         layout = QVBoxLayout()
-        #  layout.setMargin(0)
         self.setLayout(layout)
 
-        scripter = scripter_widget()
-        layout.addWidget(scripter)
+        self.scripter = scripter_widget(self, float_panel=True)
+        layout.addWidget(self.scripter)
 
         self.setWindowTitle('Vina Scripter')
         self.resize(700, 700)

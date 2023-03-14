@@ -20,8 +20,10 @@ from ..nuke_util.nuke_util import get_nuke_path
 
 
 class scripter_widget(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent, float_panel=False):
+        super().__init__()
+        self.float_panel = float_panel
+        self.parent = parent
 
         layout = QVBoxLayout()
         layout.setMargin(0)
@@ -67,15 +69,6 @@ class scripter_widget(QWidget):
         }
 
         self.exit_node()
-
-        self.enter_node_menu = nuke.menu('Nuke').addCommand(
-            'Edit/Node/Edit Script ( Knob Scripter )', self.enter_node, 'alt+z')
-
-        nuke.menu('Animation').addCommand(
-            'Python Expression', 'nuke.panels["vina_scripter"]().edit_expression()')
-
-        nuke.menu('Animation').addCommand(
-            'Tcl Expression', 'nuke.panels["vina_scripter"]().edit_expression(True)')
 
         nuke.addOnDestroy(lambda: self.exit_node(True)
                           if nuke.thisNode() == self.current_node else None)
@@ -450,7 +443,7 @@ class scripter_widget(QWidget):
         return dimension
 
     def enter(self, node, knob_expression=None, expr_syntax='python', dimension=-1):
-        if not self.exit_node(False, False):
+        if not self.exit_node(False, True):
             return
 
         self.current_node = node
@@ -589,7 +582,7 @@ class scripter_widget(QWidget):
         self.set_modified_knob(False)
         return True
 
-    def exit_node(self, force=False, editor_focus=True):
+    def exit_node(self, force=False, from_enter_node=False):
         if not force:
             if not self.check_and_save():
                 return False
@@ -614,7 +607,7 @@ class scripter_widget(QWidget):
         self.set_code(self.get_script_current_page(), cursor_name)
 
         self.editor.set_dimensions()
-        if editor_focus:
+        if not from_enter_node:
             self.editor.set_focus(0)
 
         return True
