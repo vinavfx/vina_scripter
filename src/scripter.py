@@ -521,19 +521,11 @@ class scripter_widget(QWidget):
         if not nuke.ask('The new code will be deleted, continue ?'):
             return
 
-        cursor_name = self.current_node_name + self.current_knob.name()
+        node = self.current_node
+        knob = self.current_knob
 
-        if self.current_knob.Class() in self.python_knobs_list:
-            if self.current_knob.name() == 'kernelSource':
-                self.set_code(self.current_knob.toScript(),
-                              cursor_name, 'blink')
-            else:
-                self.set_code(self.current_knob.value(), cursor_name)
-        else:
-            self.set_code(self.get_python_expression(
-                self.current_knob), cursor_name)
-
-        self.set_modified_knob(False)
+        self.exit_node(True)
+        self.enter(node, knob)
 
     def save(self):
         self.activated_knob_changed = False
