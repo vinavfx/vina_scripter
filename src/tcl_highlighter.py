@@ -30,11 +30,12 @@ class tcl_highlighter(QtGui.QSyntaxHighlighter):
             "proc", "if", "while", "for", "foreach", "switch", "string",
             "list", "array", "catch", "return", "puts", "source", "incr", "rename",
             "continue", "unset", "append", "lindex", "incr", "concat", "regexp", "join",
-            "format", "open", "close", "info", "eof", "seek", "else"
+            "format", "open", "close", "info", "eof", "seek", "else", "expr", "exists",
+            "expression", "global"
         ]
 
         keywords = [
-            'set', 'expr', 'puts', 'exists', 'x', 'abs', 'acos', 'asin', 'atan', 'atan2',
+            'set', 'x', 'abs', 'acos', 'asin', 'atan', 'atan2',
             'ceil', 'clamp', 'cos', 'cosh', 'degrees', 'exp', 'exponent', 'fBm',
             'fabs', 'floor', 'fmod', 'frame', 'hypot', 'int', 'ldexp', 'lerp',
             'log', 'log10', 'logb', 'mantissa', 'max', 'min', 'mix', 'noise', 'pi',

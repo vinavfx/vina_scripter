@@ -10,6 +10,7 @@ from .src.script_output import get_nuke_console
 
 
 nuke_console = None
+nuke_console_connected = False
 
 def setup():
     panels.init(
@@ -30,18 +31,24 @@ def setup():
     nuke.addUpdateUI(connect_to_nuke_console)
 
 
-def connect_to_nuke_console():
-    global nuke_console
+def connect_to_nuke_console(connect=True):
+    global nuke_console, nuke_console_connected
 
-    if nuke_console:
+    if nuke_console_connected == connect:
         return
 
-    nuke_console = get_nuke_console()
+    if not nuke_console:
+        nuke_console = get_nuke_console()
 
     if not nuke_console:
         return
 
-    nuke_console.textChanged.connect(update_consoles)
+    if connect:
+        nuke_console.textChanged.connect(update_consoles)
+    else:
+        nuke_console.textChanged.disconnect()
+
+    nuke_console_connected = connect
 
 
 def update_consoles():

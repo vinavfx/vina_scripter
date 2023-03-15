@@ -356,7 +356,7 @@ class scripter_widget(QWidget):
                 exp = '[python {}]'.format(code.replace('\n', '').strip())
 
         else:
-            if self.line_count(code) > 1 or any(w in code for w in ['return', 'set']):
+            if any(w in code for w in ['return', 'set', 'expr']):
                 exp = '[' + code + ']'
             else:
                 exp = code

@@ -398,6 +398,10 @@ class code_editor(QPlainTextEdit):
     def highlight_word_clean(self):
         self.highlight_word_selections = []
         extra_selections = [self.highlight_line_selection]
+
+        if not any(extra_selections):
+            return
+
         self.setExtraSelections(extra_selections)
 
     def highlight_word(self, word=None, cursor=None):
@@ -431,6 +435,9 @@ class code_editor(QPlainTextEdit):
 
         extra_selections = [self.highlight_line_selection]
         extra_selections.extend(self.highlight_word_selections)
+
+        if not any(extra_selections):
+            return
 
         self.setExtraSelections(extra_selections)
 
