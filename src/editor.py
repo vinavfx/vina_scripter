@@ -179,6 +179,10 @@ class editor_widget(QWidget):
         self.syntax = syntax
         document = self.editor.document()
 
+        self.python_highlight.setDocument(None)
+        self.tcl_highlight.setDocument(None)
+        self.blink_highlight.setDocument(None)
+
         if syntax == 'python':
             self.python_highlight.setDocument(document)
 
