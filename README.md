@@ -10,8 +10,8 @@ Showing: <a href=https://vinavfx.com/blog target='_blank'>https://vinavfx.com/bl
 
 # Feautres
 - Edit <b>Temporary Scripts</b> to make it work and create ':tabnew' tabs and close them 'tabclose'
-- Ability to edit any <b>Expression</b> of any knob in python
-- Automatic detection of the <b>Blinkscript</b> knob
+- Ability to edit any <b>Expression</b> of any knob in python or tcl
+- Automatic detection of <b>Blinkscript</b>, <b>TCL</b> and <b>Python</b> knob
 - It is scalable to add more shortcuts and missing <b>VIM</b> commands
 
 # Installation
@@ -91,3 +91,7 @@ In this script are all available shortcuts, in case you want to change them at w
 - <b>PYTHON</b> Code
 
 ![image](screenshots/python.jpg)
+
+- <b>TCL</b> Multidimensional Code
+
+![image](screenshots/tcl.jpg)
