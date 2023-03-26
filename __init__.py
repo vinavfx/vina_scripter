@@ -2,17 +2,25 @@
 # Office: VFX Artist - Senior Compositor
 # Website: vinavfx.com
 import nuke
+from sys import version_info
 
-from . import src as vina_scripter
-from .nuke_util import panels
+if version_info.major == 3:
+    from . import src as vina_scripter
+    from .nuke_util import panels
 
-from .src.script_output import get_nuke_console
+    from .src.script_output import get_nuke_console
 
 
 nuke_console = None
 nuke_console_connected = False
 
+
 def setup():
+    if not version_info.major == 3:
+        nuke.message(
+            '"Vina Scripter" only works on a higher version of nuke with Python 3 !')
+        return
+
     panels.init(
         'vina_scripter.vina_scripter.scripter_panel.panel_scripter', 'Vina Scripter')
 
@@ -20,7 +28,7 @@ def setup():
         vina_scripter.scripter_panel.float_scripter, 'vina_scripter')
 
     nuke.menu('Nuke').addCommand(
-        'Edit/Node/Edit Script ( Knob Scripter )', enter_node, 'alt+z')
+        'Edit/Node/Edit Script ( Vina Scripter )', enter_node, 'alt+z')
 
     nuke.menu('Animation').addCommand(
         'Python Expression', 'vina_scripter.edit_expression()')
