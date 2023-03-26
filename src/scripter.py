@@ -328,6 +328,7 @@ class scripter_widget(QWidget):
         if not knob.hasExpression():
             return False
 
+        dimension = dimension if dimension >= 0 else 0
         expr = self.get_raw_expression(knob)[dimension]
 
         if not expr:
@@ -459,10 +460,14 @@ class scripter_widget(QWidget):
 
         if knob_expression:
             if not knob_expression.hasExpression(dimension):
-                self.set_expression(knob_expression,
-                                    str(knob_expression.value(
-                                        dimension if dimension >= 0 else 0)),
-                                    expr_syntax, dimension)
+                if type(knob_expression) == nuke.Boolean_Knob:
+                    default_value = knob_expression.value()
+                else:
+                    default_value = knob_expression.value(
+                        dimension if dimension >= 0 else 0)
+
+                self.set_expression(knob_expression, str(
+                    default_value), expr_syntax, dimension)
 
             self.toolbar.knob_selector.addItem(knob_expression.name())
 
