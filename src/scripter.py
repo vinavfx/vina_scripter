@@ -646,7 +646,11 @@ class scripter_widget(QWidget):
 
         code = self.editor.get_code(dimension)
         self.set_expression(knob, code, 'tcl', dimension)
-        result = knob.value(dimension)
+
+        if type(knob) == nuke.Boolean_Knob:
+            result = knob.value()
+        else:
+            result = knob.value(dimension)
 
         error_console = self.get_nuke_error_console()
         error = error_console.toPlainText().strip() if error_console else ''
