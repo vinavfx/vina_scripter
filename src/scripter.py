@@ -687,9 +687,10 @@ class scripter_widget(QWidget):
             code.replace("\\", "\\\\").replace("'", "\\'"))
 
         if not version_info.major == 3:
-            python_code = python_code.replace('\n', '\\n').replace('"', '\\"')
+            python_code = python_code.replace('\n', '\\n').replace(
+                '"', '\\"').replace("'", "\\'")
 
-            python_code = 'eval(compile(\"{}\", "", "exec"))'.format(
+            python_code = 'eval(compile("{}", "", "exec"))'.format(
                 python_code)
 
         try:
