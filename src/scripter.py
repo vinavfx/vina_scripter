@@ -4,6 +4,7 @@
 import traceback
 import os
 import re
+from sys import version_info
 
 from PySide2.QtGui import QColor, QKeySequence
 from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit, QWidget
@@ -684,6 +685,12 @@ class scripter_widget(QWidget):
 
         python_code = "exec('''{}''')".format(
             code.replace("\\", "\\\\").replace("'", "\\'"))
+
+        if not version_info.major == 3:
+            python_code = python_code.replace('\n', '\\n').replace('"', '\\"')
+
+            python_code = 'eval(compile(\"{}\", "", "exec"))'.format(
+                python_code)
 
         try:
             nuke.runIn(run_context, python_code)
