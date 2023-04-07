@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Author: Francisco Jose Contreras Cuevas
 # Office: VFX Artist - Senior Compositor
 # Website: vinavfx.com

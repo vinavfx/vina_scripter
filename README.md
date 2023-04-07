@@ -1,9 +1,7 @@
 # Vina Scripter
 Python and Blinkscript editor for Nuke, based on the VIM editor,
 inspired by <a href=https://github.com/adrianpueyo/KnobScripter target='_blank'>KnobScripter</a>, but rewritten,
-the idea that is simpler and more useful and without the option to edit external files,
-and just it will support Nuke with Python 3, not to dirty the code,
-to make it compatible with older nukes, do a Fork.
+the idea that is simpler and more useful and without the option to edit external files.
 
 Showing: <a href=https://vinavfx.com/blog target='_blank'>https://vinavfx.com/blog</a>
 

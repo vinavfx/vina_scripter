@@ -16,10 +16,9 @@ from .python_highlighter import KSPythonHighlighter
 from .blink_highlighter import KSBlinkHighlighter
 from .tcl_highlighter import tcl_highlighter
 
-
 class multi_editor_widget(QWidget):
     def __init__(self, parent):
-        super().__init__()
+        super(multi_editor_widget, self).__init__()
         self.parent = parent
 
         layout = QVBoxLayout()
@@ -214,7 +213,7 @@ class editor_widget(QWidget):
 
 class code_editor(QPlainTextEdit):
     def __init__(self, parent):
-        super().__init__()
+        super(code_editor, self).__init__()
         self.parent = parent
 
         keys_vim_mode.init(self)
@@ -257,11 +256,11 @@ class code_editor(QPlainTextEdit):
     def focusInEvent(self, event):
         self.parent.parent.focus_dimension = self.parent.index
         self.disable_nuke_shortcut()
-        super().focusInEvent(event)
+        super(code_editor, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
         self.disable_nuke_shortcut(False)
-        super().focusInEvent(event)
+        super(code_editor, self).focusInEvent(event)
 
     def disable_nuke_shortcut(self, disable=True):
         if disable:
@@ -275,6 +274,9 @@ class code_editor(QPlainTextEdit):
             self.backup_nuke_shortcut = []
 
             for act in nuke_actions:
+                if not act:
+                    continue
+
                 self.backup_nuke_shortcut.append([act, act.shortcut()])
                 act.setShortcut('')
         else:
@@ -283,7 +285,7 @@ class code_editor(QPlainTextEdit):
 
     def scrollContentsBy(self, dx, dy):
         self.number_area.update()
-        super().scrollContentsBy(dx, dy)
+        super(code_editor, self).scrollContentsBy(dx, dy)
 
     def keyPressEvent(self, event):
         self.parent.connect_changed()
@@ -292,7 +294,7 @@ class code_editor(QPlainTextEdit):
         key = event.key()
 
         if key == Qt.Key_Escape:
-            super().keyPressEvent(event)
+            super(code_editor, self).keyPressEvent(event)
 
         if ctrl and (key == Qt.Key_M or key == Qt.Key_Return):
             self.parent.parent.parent.execute_script()
@@ -309,7 +311,7 @@ class code_editor(QPlainTextEdit):
             return normal_key_press_event(self, event)
 
     def resizeEvent(self, e):
-        super().resizeEvent(e)
+        super(code_editor, self).resizeEvent(e)
         cr = self.contentsRect()
         rect = QRect(cr.left(), cr.top(), self.number_area_width, cr.height())
         self.number_area.setGeometry(rect)

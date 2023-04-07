@@ -9,7 +9,7 @@ from .scripter import scripter_widget
 
 class panel_scripter(panel_widget):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(panel_scripter, self).__init__(parent)
 
         layout = QVBoxLayout()
         layout.setMargin(0)
@@ -21,7 +21,7 @@ class panel_scripter(panel_widget):
 
 class float_scripter(float_panel_widget):
     def __init__(self):
-        super().__init__()
+        super(float_scripter, self).__init__()
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -35,6 +35,6 @@ class float_scripter(float_panel_widget):
 
     def closeEvent(self, event):
         self.scripter.exit_node()
-        return super().closeEvent(event)
+        return super(float_scripter, self).closeEvent(event)
 
 

@@ -16,7 +16,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
     """
 
     def __init__(self, style="monokai"):
-        super().__init__(None)
+        super(KSPythonHighlighter, self).__init__(None)
 
         self.selected_text = ""
         self.selected_text_prev = ""

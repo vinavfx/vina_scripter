@@ -1,7 +1,8 @@
 # Author: Francisco Jose Contreras Cuevas
 # Office: VFX Artist - Senior Compositor
 # Website: vinavfx.com
-from statistics import mode
+from collections import Counter
+
 
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont, QTextCursor
@@ -112,7 +113,8 @@ class vim_widget(QWidget):
                 return 2
 
             try:
-                return mode(diffs)
+                counted_data = Counter(diffs)
+                return max(counted_data, key=counted_data.get)
             except:
                 return 4
 

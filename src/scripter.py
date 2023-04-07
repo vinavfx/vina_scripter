@@ -21,7 +21,7 @@ from ..nuke_util.nuke_util import get_nuke_path
 
 class scripter_widget(QWidget):
     def __init__(self, parent, float_panel=False):
-        super().__init__()
+        super(scripter_widget, self).__init__()
         self.float_panel = float_panel
         self.parent = parent
 
@@ -84,7 +84,7 @@ class scripter_widget(QWidget):
 
     def showEvent(self, event):
         self.restore_state()
-        super().showEvent(event)
+        super(scripter_widget, self).showEvent(event)
 
     def save_state(self, save_code=True):
         if save_code:

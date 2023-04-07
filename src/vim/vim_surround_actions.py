@@ -43,7 +43,7 @@ def get_enclosing_word(cursor):
     cursor.select(QTextCursor.WordUnderCursor)
     word = cursor.selectedText()
 
-    # Aquí retornar los signos que encierren una
+    # Aqui retornar los signos que encierren una
     # palabra o frase para usarlos
     # en las 2 funciones de abajo
 
