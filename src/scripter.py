@@ -91,6 +91,9 @@ class scripter_widget(QWidget):
         if save_code:
             self.set_script_page(self.state['current_page'])
 
+        if not self.restored_state:
+            return
+
         jwrite(self.state_file, self.state)
 
     def knob_changed(self):
