@@ -78,6 +78,7 @@ def enter_node():
     if node_inside and not scripter_panel.isVisible():
         scripter_panel.show()
         scripter_panel.scripter.console.clear_all()
+        scripter_panel.scripter.editor.set_focus()
 
 
 def edit_expression(tcl=False):

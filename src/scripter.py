@@ -616,6 +616,9 @@ class scripter_widget(QWidget):
         if not from_enter_node:
             self.editor.set_focus(0)
 
+        if self.float_panel:
+            self.parent.close()
+
         return True
 
     def clean_output_console(self):

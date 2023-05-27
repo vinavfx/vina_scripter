@@ -25,6 +25,7 @@ class vim_widget(QWidget):
         self.command_line.setToolTip('w : Save script to node\n'
                                      'wq : Save and Exit\n'
                                      'q : Exit node\n'
+                                     'q! : Exit node without saving\n'
                                      'tabnew : New script page\n'
                                      'tabclose : Close script page\n'
                                      'tabo : Close all except the current page\n'
@@ -42,7 +43,11 @@ class vim_widget(QWidget):
         self.commands = {
             'w': scripter.save,
             'q': scripter.exit_node,
+            'qa': scripter.exit_node,
+            'q!': lambda: scripter.exit_node(True),
+            'qa!': lambda: scripter.exit_node(True),
             'wq': lambda: (scripter.save(), scripter.exit_node()),
+            'wqa': lambda: (scripter.save(), scripter.exit_node()),
             'tabnew': scripter.add_page,
             'tabclose': scripter.remove_current_page,
             'tabo': scripter.clean_all_pages,
