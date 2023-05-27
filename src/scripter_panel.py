@@ -21,6 +21,7 @@ class panel_scripter(panel_widget):
 
 class float_scripter(float_panel_widget):
     def __init__(self):
+        self.scripter = None
         super(float_scripter, self).__init__()
 
         layout = QVBoxLayout()
@@ -34,7 +35,9 @@ class float_scripter(float_panel_widget):
         self.center_window()
 
     def closeEvent(self, event):
-        self.scripter.exit_node()
+        if self.scripter:
+            self.scripter.exit_node()
+
         return super(float_scripter, self).closeEvent(event)
 
 
