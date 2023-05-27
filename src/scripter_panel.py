@@ -2,6 +2,7 @@
 # Office: VFX Artist - Senior Compositor
 # Website: vinavfx.com
 from PySide2.QtWidgets import QVBoxLayout
+from PySide2.QtCore import Qt
 
 from ..nuke_util.panels import panel_widget, float_panel_widget
 
@@ -23,6 +24,8 @@ class float_scripter(float_panel_widget):
     def __init__(self):
         self.scripter = None
         super(float_scripter, self).__init__()
+
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         layout = QVBoxLayout()
         self.setLayout(layout)
