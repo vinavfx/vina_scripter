@@ -25,7 +25,7 @@ class float_scripter(float_panel_widget):
         self.scripter = None
         super(float_scripter, self).__init__()
 
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.Tool | Qt.WindowStaysOnTopHint)
 
         layout = QVBoxLayout()
         self.setLayout(layout)
