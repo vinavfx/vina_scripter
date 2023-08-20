@@ -11,6 +11,7 @@ from .scripter import scripter_widget
 class panel_scripter(panel_widget):
     def __init__(self, parent=None):
         super(panel_scripter, self).__init__(parent)
+        self.margin = 2
 
         layout = QVBoxLayout()
         layout.setMargin(0)
