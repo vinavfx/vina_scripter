@@ -1,0 +1,10 @@
+☐ En barra vim poner comando de '%s/<find>/<replace>/g'
+☐ Agregar '.' como último atajo hecho
+☐ Borrar espacios dobles en las líneas con leader + f
+☐ Que el copiado funcione entre splitter
+✔ Agregar comando q! para salir sin guardar @done(2023-11-06 01:39) @project
+✔ la ventana flotante, en windows queda por detras al no estar en foco @done(2023-11-06 01:40) @project
+☐ El dialogo de confirmación queda por debajo de la ventana flotante
+☐ Al crear expression desde el menu en el knob 'disable', da error
+☐ Con Control+P crear popup con menu con los knob, para poder cambiarlos
+☐ Esta expresión da error en noise (r.zoffset + 200), analizarla
