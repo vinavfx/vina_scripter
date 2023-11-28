@@ -8,3 +8,4 @@
 ☐ Al crear expression desde el menu en el knob 'disable', da error
 ☐ Con Control+P crear popup con menu con los knob, para poder cambiarlos
 ☐ Esta expresión da error en noise (r.zoffset + 200), analizarla
+☐ La 'r' para remplazar un caracter no funciona ya que se esta usando como leader
