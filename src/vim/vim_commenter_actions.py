@@ -1,6 +1,8 @@
-# Author: Francisco Jose Contreras Cuevas
-# Office: VFX Artist - Senior Compositor
-# Website: vinavfx.com
+# -----------------------------------------------------------
+# AUTHOR --------> Francisco Jose Contreras Cuevas
+# OFFICE --------> Senior VFX Compositor, Software Developer
+# WEBSITE -------> https://vinavfx.com
+# -----------------------------------------------------------
 from PySide2.QtGui import QTextCursor
 
 from .vim_common_actions import fill_selection_blocks

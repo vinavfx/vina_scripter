@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-# Author: Francisco Jose Contreras Cuevas
-# Office: VFX Artist - Senior Compositor
-# Website: vinavfx.com
+# -----------------------------------------------------------
+# AUTHOR --------> Francisco Jose Contreras Cuevas
+# OFFICE --------> Senior VFX Compositor, Software Developer
+# WEBSITE -------> https://vinavfx.com
+# -----------------------------------------------------------
 
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel
 from PySide2.QtGui import QIcon
