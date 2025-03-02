@@ -29,10 +29,10 @@ def setup():
         'Edit/Node/Edit Script ( Vina Scripter )', enter_node, 'alt+z')
 
     nuke.menu('Animation').addCommand(
-        'Python Expression', 'vina_scripter.edit_expression()')
+        'Python Expression', source + '.edit_expression()')
 
     nuke.menu('Animation').addCommand(
-        'Tcl Expression', 'vina_scripter.edit_expression(True)')
+        'Tcl Expression', source + '.edit_expression(True)')
 
     nuke.addUpdateUI(connect_to_nuke_console)
 
