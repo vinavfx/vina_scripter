@@ -5,11 +5,15 @@
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
 
+import os
 from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel
 from PySide2.QtGui import QIcon
 
 from ..nuke_util.nuke_util import get_nuke_path
 icons_path = '{}/vina_scripter/icons'.format(get_nuke_path())
+
+if not os.path.isdir(icons_path):
+    icons_path = '{}/nuke_tools/icons'.format(get_nuke_path())
 
 
 class toolbar_widget(QWidget):
