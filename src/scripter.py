@@ -82,8 +82,8 @@ class scripter_widget(QWidget):
 
         self.state_file = '{}/vina_scripter_state.json'.format(get_nuke_path())
         self.restored_state = False
-        self.python_knobs_list = ['PythonKnob',
-                                  'PyScript_Knob', 'PythonCustomKnob']
+        self.python_knobs_list = [
+            'PythonKnob', 'PyScript_Knob', 'PythonCustomKnob', 'Multiline_Eval_String_Knob']
 
     def showEvent(self, event):
         self.restore_state()
@@ -244,7 +244,7 @@ class scripter_widget(QWidget):
         expressions = []
 
         for _, knob in node.knobs().items():
-            if knob.Class() == 'PythonKnob' or knob.Class() == 'PythonCustomKnob':
+            if knob.Class() in ['PythonKnob', 'PythonCustomKnob', 'Multiline_Eval_String_Knob']:
                 python_knobs.append(knob)
 
             elif knob.Class() == 'PyScript_Knob':
