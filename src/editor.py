@@ -270,7 +270,8 @@ class code_editor(QPlainTextEdit):
                 nuke.menu('Nuke').menu('File').menu('Close Comp'),
                 nuke.menu('Nuke').menu('File').menu('Open Comp...'),
                 nuke.menu('Nuke').menu('Viewer').menu('Toggle Monitor Out'),
-                nuke.menu('Nuke').menu('Viewer').menu('New Comp Viewer')
+                nuke.menu('Nuke').menu('Viewer').menu('New Comp Viewer'),
+                nuke.menu('Nodes').menu('ComfyUI/Scripts/executeRuns')
             ]
 
             self.backup_nuke_shortcut = []
