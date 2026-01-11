@@ -3,7 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-import nuke
+import nuke # type: ignore
 
 from PySide2.QtGui import QFont, QTextOption, QColor, QPainter, QTextFormat, QPalette, QTextCursor
 from PySide2.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QWidget, QVBoxLayout, QSplitter

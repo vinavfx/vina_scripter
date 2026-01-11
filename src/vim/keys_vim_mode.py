@@ -183,6 +183,7 @@ def init(self):
         'c$': comment_to_end,
         'cc': (comment_current_line, False, True),
         'cu': (comment_current_line, False, False),
+        'f1': remove_double_empty_lines
     }
 
     self.leader_visual_hotkeys = {
@@ -588,9 +589,10 @@ def press(self, event, visual = False, visual_line = False, leader = False):
     cursor = self.textCursor()
 
     run = None
-    if not _char.isdigit():
+    if not _char.isdigit() or self.first_held_key:
         run = get_action(self, event, hotkeys)
-    else:
+
+    if not run and _char.isdigit():
         digit_action = get_action(self, event, hotkeys, False)
         if digit_action:
             key = digit_action[2]

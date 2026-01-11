@@ -80,7 +80,7 @@ def comment_end_line(self, cursor, _):
     return cursor
 
 
-def comment_to_end(self, cursor, __):
+def comment_to_end(self, cursor, _):
     cursor.insertText('{} '.format(comment_syntax(self)))
     return cursor
 

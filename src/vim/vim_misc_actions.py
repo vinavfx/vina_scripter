@@ -4,6 +4,7 @@
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
 from PySide2.QtGui import QTextCursor
+import re
 
 from .vim_general_actions import normal
 
@@ -115,4 +116,16 @@ def indent_selection(self, cursor, _, right=True):
 
     cursor.endEditBlock()
 
+    self.setTextCursor(cursor)
+
+
+def remove_double_empty_lines(self, cursor, _):
+    cursor.beginEditBlock()
+    doc = self.document()
+    content = doc.toPlainText().strip()
+    new_content = re.sub(r'\n\s*\n\s*\n+', '\n\n', content)
+
+    cursor.select(QTextCursor.Document)
+    cursor.insertText(new_content)
+    cursor.endEditBlock()
     self.setTextCursor(cursor)

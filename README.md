@@ -62,7 +62,7 @@ In this script are all available shortcuts, in case you want to change them at w
 
 ![image](screenshots/tabs.jpg)
 
-- <b>COMMAND LINE</b> 
+- <b>COMMAND LINE</b>
 
 ![image](screenshots/command_line.jpg)
 
