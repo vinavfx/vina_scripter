@@ -395,7 +395,10 @@ class scripter_widget(QWidget):
             codes = expression
 
         else:
-            codes[0] = {'value': str( self.current_knob.value() ), 'syntax': 'python'}
+            if self.current_knob.Class() in ['PythonKnob', 'PythonCustomKnob', 'Multiline_Eval_String_Knob']:
+                codes[0] = {'value': self.current_knob.toScript(), 'syntax': 'python'}
+            else:
+                codes[0] = {'value': str( self.current_knob.value() ), 'syntax': 'python'}
 
         cursor_name = self.current_node_name + self.current_knob.name()
 
