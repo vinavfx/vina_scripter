@@ -4,8 +4,8 @@
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
 from PySide2.QtWidgets import QTextEdit, QApplication, QSplitter
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QFont, QTextCursor
+from PySide2.QtCore import Qt, QTimer
+from PySide2.QtGui import QFont
 
 nuke_console = None
 
@@ -43,32 +43,36 @@ def get_nuke_console():
 
 
 class output_widget(QTextEdit):
+    MAX_LINES = 1000
+
     def __init__(self, parent):
         QTextEdit.__init__(self, parent)
         self.parent = parent
         self.setReadOnly(True)
         self.setFont(QFont(parent.fonts[2], 9))
+        self.last_pos = 0
+        self.timer = QTimer(self)
+        self.timer.setSingleShot(True)
+        self.timer.setInterval(10)
+        self.timer.timeout.connect(self.flush)
+
+    def flush(self):
+        nuke_console = get_nuke_console()
+        if nuke_console:
+            lines = nuke_console.toPlainText().split('\n')
+            self.setPlainText('\n'.join(lines[-self.MAX_LINES:]))
+            self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def update_output(self):
         nuke_console = get_nuke_console()
         if not nuke_console:
             return
 
-        text1 = self.toPlainText()
-        text2 = nuke_console.toPlainText()
-
-        i = 0
-        while i < len(text1) and i < len(text2) and text1[i] == text2[i]:
-            i += 1
-
-        new_text = nuke_console.toPlainText()[i:]
-
-        text_cursor = self.textCursor()
-        text_cursor.movePosition(QTextCursor.End)
-        self.setTextCursor(text_cursor)
-
-        self.insertPlainText(new_text)
-        self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
+        text = nuke_console.toPlainText()
+        if len(text) > self.last_pos:
+            self.last_pos = len(text)
+            if not self.timer.isActive():
+                self.timer.start()
 
     def clear_all(self):
         nuke_console = get_nuke_console()
@@ -77,6 +81,7 @@ class output_widget(QTextEdit):
 
         self.clear()
         nuke_console.clear()
+        self.last_pos = 0
 
     def add_output(self, output):
         nuke_console = get_nuke_console()
