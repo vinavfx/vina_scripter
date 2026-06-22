@@ -3,8 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-from PySide2.QtGui import QTextCursor
-from PySide2.QtCore import Qt
+from ...nuke_util.pyside import Qt, QTextCursor
 
 from .vim_nav_actions import *
 from .vim_general_actions import strip_text

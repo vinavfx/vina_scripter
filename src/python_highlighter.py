@@ -1,6 +1,9 @@
 # Original version by Wouter Gilsing and modified by Adrian Pueyo.
 # current version modified by Francisco Contreras
-from PySide2 import QtWidgets, QtGui, QtCore
+from ..nuke_util.pyside import (
+    QtGui,
+    QRegExp,
+)
 
 import nuke
 from .blink_highlighter import onedark
@@ -127,11 +130,11 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         singletons = ['True', 'False', 'None']
 
         if 'comment' in styles:
-            tri_single = (QtCore.QRegExp("'''"), 1, styles['string'])
-            tri_double = (QtCore.QRegExp('"""'), 2, styles['string'])
+            tri_single = (QRegExp("'''"), 1, styles['string'])
+            tri_double = (QRegExp('"""'), 2, styles['string'])
         else:
-            tri_single = (QtCore.QRegExp("'''"), 1, base_format)
-            tri_double = (QtCore.QRegExp('"""'), 2, base_format)
+            tri_single = (QRegExp("'''"), 1, base_format)
+            tri_double = (QRegExp('"""'), 2, base_format)
 
         # 2. Rules
         rules = []
@@ -198,7 +201,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
 
         # 3. Resulting dictionary
         result = {
-            "rules": [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
+            "rules": [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
             # Build a QRegExp for each pattern
             "tri_single": tri_single,
             "tri_double": tri_double,

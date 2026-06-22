@@ -2,9 +2,11 @@
 # This script was modified by Francisco Contreras.
 
 import re
-from PySide2.QtCore import Qt
-from PySide2.QtGui import  QTextCursor
-from PySide2.QtWidgets import QPlainTextEdit
+from ..nuke_util.pyside import (
+    Qt,
+    QTextCursor,
+    QPlainTextEdit,
+)
 
 
 def key_press_event(self, event):

@@ -6,9 +6,15 @@
 from collections import Counter
 
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QFont, QTextCursor
-from PySide2.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit
+from ...nuke_util.pyside import (
+    Qt,
+    QFont,
+    QTextCursor,
+    QWidget,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+)
 
 
 class vim_widget(QWidget):

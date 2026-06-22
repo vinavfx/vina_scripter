@@ -3,9 +3,14 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-from PySide2.QtWidgets import QTextEdit, QApplication, QSplitter
-from PySide2.QtCore import Qt, QTimer
-from PySide2.QtGui import QFont
+from ..nuke_util.pyside import (
+    Qt,
+    QTimer,
+    QFont,
+    QTextEdit,
+    QApplication,
+    QSplitter,
+)
 
 nuke_console = None
 

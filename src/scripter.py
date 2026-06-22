@@ -8,9 +8,17 @@ import os
 import re
 from sys import version_info
 
-from PySide2.QtGui import QColor, QKeySequence
-from PySide2.QtWidgets import QVBoxLayout, QShortcut, QSplitter, QApplication, QTextEdit, QWidget
-from PySide2.QtCore import Qt
+from ..nuke_util.pyside import (
+    Qt,
+    QColor,
+    QKeySequence,
+    QVBoxLayout,
+    QShortcut,
+    QSplitter,
+    QApplication,
+    QTextEdit,
+    QWidget,
+)
 
 import nuke
 
@@ -29,7 +37,7 @@ class scripter_widget(QWidget):
         self.parent = parent
 
         layout = QVBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         self.setWindowTitle('Knob Scripter')

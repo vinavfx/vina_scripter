@@ -3,9 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-from PySide2.QtWidgets import QVBoxLayout
-from PySide2.QtCore import Qt
-
+from ..nuke_util.pyside import Qt, QVBoxLayout
 from ..nuke_util.panels import panel_widget, float_panel_widget
 
 from .scripter import scripter_widget
@@ -16,7 +14,7 @@ class panel_scripter(panel_widget):
         self.margin = 2
 
         layout = QVBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         self.scripter = scripter_widget(self)

@@ -5,9 +5,24 @@
 # -----------------------------------------------------------
 import nuke # type: ignore
 
-from PySide2.QtGui import QFont, QTextOption, QColor, QPainter, QTextFormat, QPalette, QTextCursor
-from PySide2.QtWidgets import QPlainTextEdit, QWidget, QTextEdit, QWidget, QVBoxLayout, QSplitter
-from PySide2.QtCore import Qt, QRect, QRegExp
+import re
+
+from ..nuke_util.pyside import (
+    Qt,
+    QRect,
+    QFont,
+    QTextOption,
+    QColor,
+    QPainter,
+    QTextFormat,
+    QPalette,
+    QTextCursor,
+    QPlainTextEdit,
+    QWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QSplitter,
+)
 
 from .keys_normal_mode import key_press_event as normal_key_press_event
 from .vim import keys_vim_mode
@@ -24,7 +39,7 @@ class multi_editor_widget(QWidget):
         self.parent = parent
 
         layout = QVBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
 
@@ -120,7 +135,7 @@ class editor_widget(QWidget):
         self.index = index
 
         layout = QVBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
 
@@ -388,15 +403,10 @@ class code_editor(QPlainTextEdit):
         if self.is_search:
             pattern = word
 
-        regex = QRegExp(pattern)
+        text = self.document().toPlainText()
         word_positions = []
-        cursor = QTextCursor(self.document())
-
-        while not cursor.isNull() and not cursor.atEnd():
-            cursor = self.document().find(regex, cursor)
-            if not cursor.isNull():
-                word_positions.append(cursor.position()-len(word))
-            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+        for match in re.finditer(pattern, text):
+            word_positions.append(match.start())
 
         return word_positions
 

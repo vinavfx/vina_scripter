@@ -6,8 +6,7 @@
 import ast
 import traceback
 
-from PySide2.QtGui import QTextCursor
-from PySide2.QtCore import Qt
+from ...nuke_util.pyside import Qt, QTextCursor
 
 from .vim_common_actions import fill_selection_blocks
 

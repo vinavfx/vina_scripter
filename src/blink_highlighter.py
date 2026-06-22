@@ -1,6 +1,6 @@
 # Original version by Adrian Pueyo.
 # current version modified by Francisco Contreras
-from PySide2 import QtGui, QtCore
+from ..nuke_util.pyside import QtCore, QtGui, QRegExp
 import re
 
 onedark = {
@@ -105,11 +105,11 @@ class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
         ]
 
         if 'multiline_comments' in styles:
-            multiline_delimiter = (QtCore.QRegExp(
-                "/\\*"), QtCore.QRegExp("\\*/"), 1, styles['multiline_comments'])
+            multiline_delimiter = (QRegExp(
+                "/\\*"), QRegExp("\\*/"), 1, styles['multiline_comments'])
         else:
-            multiline_delimiter = (QtCore.QRegExp(
-                "/\\*"), QtCore.QRegExp("\\*/"), 1, base_format)
+            multiline_delimiter = (QRegExp(
+                "/\\*"), QRegExp("\\*/"), 1, base_format)
 
         rules = []
 
@@ -159,7 +159,7 @@ class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
 
         # Return all rules
         result = {
-            "rules": [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
+            "rules": [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
             "multiline_delimiter": multiline_delimiter,
         }
         return result

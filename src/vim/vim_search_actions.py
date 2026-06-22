@@ -3,7 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-from PySide2.QtGui import QTextCursor
+from ...nuke_util.pyside import QTextCursor
 
 
 def search(self, cursor, _):

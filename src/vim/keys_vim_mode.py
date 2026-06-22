@@ -5,8 +5,7 @@
 # -----------------------------------------------------------
 from time import time
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QTextCursor
+from ...nuke_util.pyside import Qt, QTextCursor
 from ..keys_normal_mode import key_press_event as key_press_event_normal
 
 from .vim_misc_actions import *

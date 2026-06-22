@@ -6,9 +6,14 @@
 # -----------------------------------------------------------
 
 import os
-from PySide2.QtWidgets import QWidget, QPushButton, QHBoxLayout, QComboBox, QLabel
-from PySide2.QtGui import QIcon
-
+from ..nuke_util.pyside import (
+    QWidget,
+    QPushButton,
+    QHBoxLayout,
+    QComboBox,
+    QLabel,
+    QIcon,
+)
 from ..nuke_util.nuke_util import get_nuke_path
 icons_path = '{}/vina_scripter/icons'.format(get_nuke_path())
 
@@ -21,7 +26,7 @@ class toolbar_widget(QWidget):
         QWidget.__init__(self, parent)
         self.parent = parent
         layout = QHBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         self.setLayout(layout)
 
@@ -47,7 +52,7 @@ class toolbar_widget(QWidget):
         self.node_edit_widget = self.node_edit_buttons()
 
         buttons_layout = QHBoxLayout()
-        buttons_layout.setMargin(0)
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
         buttons_layout.setSpacing(5)
         self.page_buttons_widget = QWidget()
         self.page_buttons_widget.setLayout(buttons_layout)
@@ -97,7 +102,7 @@ class toolbar_widget(QWidget):
         self.current_node_label = QLabel()
 
         layout = QHBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         widget = QWidget()
         widget.setLayout(layout)
 

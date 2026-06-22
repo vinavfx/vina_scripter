@@ -3,7 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-from PySide2 import QtGui, QtCore
+from ..nuke_util.pyside import QtCore, QtGui, QSyntaxHighlighter, QRegExp
 
 from .blink_highlighter import onedark
 
@@ -25,8 +25,8 @@ class tcl_highlighter(QtGui.QSyntaxHighlighter):
 
         singletons = ['true', 'false', 'True', 'False']
 
-        tri_single = (QtCore.QRegExp("'''"), 1, green)
-        tri_double = (QtCore.QRegExp('"""'), 2, green)
+        tri_single = (QRegExp("'''"), 1, green)
+        tri_double = (QRegExp('"""'), 2, green)
 
         main_keywords = [
             "proc", "if", "while", "for", "foreach", "switch", "string",
@@ -74,7 +74,7 @@ class tcl_highlighter(QtGui.QSyntaxHighlighter):
         rules += [(r'#[^\n]*', 0, gray)]
 
         result = {
-            "rules": [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
+            "rules": [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
             "tri_single": tri_single,
             "tri_double": tri_double,
         }
