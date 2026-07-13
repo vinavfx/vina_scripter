@@ -149,6 +149,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
 
         if "function" in styles:
             rules += [(r"def[\s]+([\w\.]+)", 1, styles['function'])]
+            rules += [(r"@([\w\.]+)", 1, styles['function'])]
 
         if "class" in styles:
             rules += [(r"class[\s]+([\w\.]+)", 1, styles['class'])]
@@ -235,11 +236,10 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         self.setCurrentBlockState(0)
 
         in_multiline = self.match_multiline(
-            text, *self.styles[self._style]["tri_single"])
+            text, *self.styles[self._style]["tri_single"], string_ranges=string_ranges)
         if not in_multiline:
             in_multiline = self.match_multiline(
-                text, *self.styles[self._style]["tri_double"])
-
+                text, *self.styles[self._style]["tri_double"], string_ranges=string_ranges)
 
     def highlightFStringExpressions(self, text):
         formats = self.styles[self._style].get("formats", {})
@@ -277,16 +277,26 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         else:
             raise Exception("Style {} not found.".format(str(style_name)))
 
-    def match_multiline(self, text, delimiter, in_state, style):
+    def match_multiline(self, text, delimiter, in_state, style, string_ranges=None):
+        string_ranges = string_ranges or []
+
+        def in_string(pos):
+            return any(s <= pos < e for s, e in string_ranges)
+
         if self.previousBlockState() == in_state:
             start = 0
             add = 0
         else:
             start = delimiter.indexIn(text)
-            add = delimiter.matchedLength()
+            while start >= 0 and in_string(start):
+                start = delimiter.indexIn(text, start + 1)
+            add = delimiter.matchedLength() if start >= 0 else 0
 
         while start >= 0:
             end = delimiter.indexIn(text, start + add)
+            while end >= 0 and in_string(end):
+                end = delimiter.indexIn(text, end + 1)
+
             if end >= add:
                 length = end - start + add + delimiter.matchedLength()
                 self.setCurrentBlockState(0)
@@ -294,7 +304,11 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
                 self.setCurrentBlockState(in_state)
                 length = len(text) - start + add
             self.setFormat(start, length, style)
+
             start = delimiter.indexIn(text, start + length)
+            while start >= 0 and in_string(start):
+                start = delimiter.indexIn(text, start + 1)
+            add = delimiter.matchedLength() if start >= 0 else 0
 
         if self.currentBlockState() == in_state:
             return True
