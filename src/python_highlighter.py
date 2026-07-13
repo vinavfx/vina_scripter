@@ -207,29 +207,35 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
             is_string_rule = string_format is not None and text_format == string_format
             is_comment_rule = comment_format is not None and text_format == comment_format
 
-            index = expression.indexIn(text, 0)
+            current_pos = 0
+            index = expression.indexIn(text, current_pos)
 
             while index >= 0:
-                index = expression.pos(nth)
+                match_index = expression.pos(nth)
                 length = len(expression.cap(nth))
+                total_match_len = expression.matchedLength()
 
-                if length == 0:
-                    index = expression.indexIn(text, index + 1)
+                if total_match_len <= 0:
+                    current_pos += 1
+                    index = expression.indexIn(text, current_pos)
                     continue
 
-                if is_comment_rule and any(start <= index < end for start, end in string_ranges):
-                    index = expression.indexIn(text, index + length)
-                    continue
+                if length > 0 and match_index >= 0:
+                    if is_comment_rule and any(start <= match_index < end for start, end in string_ranges):
+                        current_pos = index + total_match_len
+                        index = expression.indexIn(text, current_pos)
+                        continue
 
-                try:
-                    self.setFormat(index, length, text_format)
-                except:
-                    return False
+                    try:
+                        self.setFormat(match_index, length, text_format)
+                    except:
+                        return False
 
-                if is_string_rule:
-                    string_ranges.append((index, index + length))
+                    if is_string_rule:
+                        string_ranges.append((match_index, match_index + length))
 
-                index = expression.indexIn(text, index + length)
+                current_pos = index + total_match_len
+                index = expression.indexIn(text, current_pos)
 
         self.highlightFStringExpressions(text)
 
@@ -256,6 +262,9 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         start = fstring_pattern.indexIn(text, 0)
         while start >= 0:
             match_len = fstring_pattern.matchedLength()
+            if match_len <= 0:
+                start = fstring_pattern.indexIn(text, start + 1)
+                continue
 
             if comment_index >= 0 and start >= comment_index:
                 break
@@ -265,6 +274,8 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
             b_index = brace_pattern.indexIn(segment, 0)
             while b_index >= 0:
                 b_len = brace_pattern.matchedLength()
+                if b_len <= 0:
+                    break
                 self.setFormat(
                     start + b_index, b_len, formats["fstring_expr"])
                 b_index = brace_pattern.indexIn(segment, b_index + b_len)
