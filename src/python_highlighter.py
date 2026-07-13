@@ -1,22 +1,13 @@
-# Original version by Wouter Gilsing and modified by Adrian Pueyo.
-# current version modified by Francisco Contreras
 from ..nuke_util.pyside import (
     QtGui,
     QRegExp,
 )
 
-import nuke
+import nuke  # type: ignore
 from .blink_highlighter import onedark
 
 
 class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
-    """
-    Adapted from an original version by Wouter Gilsing. His comments:
-    Modified, simplified version of some code found I found when researching:
-    wiki.python.org/moin/PyQt/Python%20syntax%20highlighting
-    They did an awesome job, so credits to them. I only needed to make some
-    modifications to make it fit my needs for KS.
-    """
 
     def __init__(self, style="monokai"):
         super(KSPythonHighlighter, self).__init__(None)
@@ -26,16 +17,13 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
 
         self.blocked = False
 
-        self.styles = self.loadStyles()  # Holds a dict for each style
-        self._style = style  # Can be set via setStyle
-        self.setStyle(self._style)  # Set default style
-
+        self.styles = self.loadStyles()
+        self._style = style
+        self.setStyle(self._style)
 
     def loadStyles(self):
-        """ Loads the different sets of rules """
         styles = dict()
 
-        # LOAD ANY STYLE
         default_styles_list = [
             {
                 "title": "nuke",
@@ -70,6 +58,7 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
                     'custom': self.format(onedark['white'], 'italic'),
                     'blue': self.format(onedark['purpure'], 'italic'),
                     'self': self.format(onedark['pink'], 'italic'),
+                    'fstring_expr': self.format([171, 178, 191]),
                 },
                 "keywords": {
                     'custom': ['nuke'],
@@ -80,7 +69,6 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
                 },
             }
         ]
-        # TODO separate the format before the loadstyle thing. should be done here before looping.
         for style_dict in default_styles_list:
             if all(k in style_dict.keys() for k in ["title", "styles"]):
                 styles[style_dict["title"]] = self.loadStyle(style_dict)
@@ -88,13 +76,8 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         return styles
 
     def loadStyle(self, style_dict):
-        """
-        Given a dictionary of styles and keywords, returns the style as a dict
-        """
-
         styles = style_dict["styles"].copy()
 
-        # 1. Base settings
         if "base" in styles:
             base_format = styles["base"]
         else:
@@ -136,13 +119,10 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
             tri_single = (QRegExp("'''"), 1, base_format)
             tri_double = (QRegExp('"""'), 2, base_format)
 
-        # 2. Rules
         rules = []
 
         if "argument" in styles:
-            # Everything inside parentheses
             rules += [(r"def [\w]+[\s]*\((.*)\)", 1, styles['argument'])]
-            # Now restore unwanted stuff...
             rules += [(i, 0, base_format) for i in base_keywords]
             rules += [(r"[^\(\w),.][\s]*[\w]+", 0, base_format)]
 
@@ -167,21 +147,16 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         if "number" in styles:
             rules += [(r'\b[0-9]+\b', 0, styles['number'])]
 
-        # Function definitions
         if "function" in styles:
             rules += [(r"def[\s]+([\w\.]+)", 1, styles['function'])]
 
-        # Class definitions
         if "class" in styles:
             rules += [(r"class[\s]+([\w\.]+)", 1, styles['class'])]
-            # Class argument (which is also a class so must be same color)
             rules += [(r"class[\s]+[\w\.]+[\s]*\((.*)\)", 1, styles['class'])]
 
-        # Function arguments
         if "argument" in styles:
             rules += [(r"def[\s]+[\w]+[\s]*\(([\w]+)", 1, styles['argument'])]
 
-        # Custom keywords
         if "keywords" in style_dict.keys():
             keywords = style_dict["keywords"]
             for k in keywords.keys():
@@ -190,31 +165,23 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
                               for i in keywords[k]]
 
         if "string" in styles:
-            # Double-quoted string, possibly containing escape sequences
             rules += [(r'"[^"\\]*(\\.[^"\\]*)*"', 0, styles['string'])]
-            # Single-quoted string, possibly containing escape sequences
             rules += [(r"'[^'\\]*(\\.[^'\\]*)*'", 0, styles['string'])]
 
-        # Comments from '#' until a newline
         if "comment" in styles:
             rules += [(r'#[^\n]*', 0, styles['comment'])]
 
-        # 3. Resulting dictionary
         result = {
             "rules": [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules],
-            # Build a QRegExp for each pattern
             "tri_single": tri_single,
             "tri_double": tri_double,
+            "formats": styles,
         }
 
         return result
 
     @staticmethod
     def format(rgb, style=''):
-        """
-        Return a QtWidgets.QTextCharFormat with the given attributes.
-        """
-
         color = QtGui.QColor(*rgb)
         text_format = QtGui.QTextCharFormat()
         text_format.setForeground(color)
@@ -230,34 +197,79 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
         return text_format
 
     def highlightBlock(self, text):
-        """
-        Apply syntax highlighting to the given block of text.
-        """
+        string_format = self.styles[self._style]["formats"].get("string")
+        comment_format = self.styles[self._style]["formats"].get("comment")
+
+        string_ranges = []
 
         for expression, nth, text_format in self.styles[self._style]["rules"]:
+            is_string_rule = string_format is not None and text_format == string_format
+            is_comment_rule = comment_format is not None and text_format == comment_format
+
             index = expression.indexIn(text, 0)
 
             while index >= 0:
-                # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
+
+                if length == 0:
+                    index = expression.indexIn(text, index + 1)
+                    continue
+
+                if is_comment_rule and any(start <= index < end for start, end in string_ranges):
+                    index = expression.indexIn(text, index + length)
+                    continue
+
                 try:
                     self.setFormat(index, length, text_format)
                 except:
                     return False
+
+                if is_string_rule:
+                    string_ranges.append((index, index + length))
+
                 index = expression.indexIn(text, index + length)
+
+        self.highlightFStringExpressions(text)
 
         self.setCurrentBlockState(0)
 
-        # Multi-line strings etc. based on selected scheme
         in_multiline = self.match_multiline(
             text, *self.styles[self._style]["tri_single"])
         if not in_multiline:
             in_multiline = self.match_multiline(
                 text, *self.styles[self._style]["tri_double"])
 
-        # TODO if there's a selection, highlight same occurrences in the full document.
-        #   If no selection but something highlighted, unhighlight full document. (do it thru regex or sth)
+
+    def highlightFStringExpressions(self, text):
+        formats = self.styles[self._style].get("formats", {})
+        if "fstring_expr" not in formats:
+            return
+
+        fstring_pattern = QRegExp(
+            r'''[fF]("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')'''
+        )
+        brace_pattern = QRegExp(r'\{[^}]+\}')
+
+        comment_index = QRegExp('#').indexIn(text)
+
+        start = fstring_pattern.indexIn(text, 0)
+        while start >= 0:
+            match_len = fstring_pattern.matchedLength()
+
+            if comment_index >= 0 and start >= comment_index:
+                break
+
+            segment = text[start:start + match_len]
+
+            b_index = brace_pattern.indexIn(segment, 0)
+            while b_index >= 0:
+                b_len = brace_pattern.matchedLength()
+                self.setFormat(
+                    start + b_index, b_len, formats["fstring_expr"])
+                b_index = brace_pattern.indexIn(segment, b_index + b_len)
+
+            start = fstring_pattern.indexIn(text, start + match_len)
 
     def setStyle(self, style_name="nuke"):
         if style_name in self.styles.keys():
@@ -266,37 +278,24 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
             raise Exception("Style {} not found.".format(str(style_name)))
 
     def match_multiline(self, text, delimiter, in_state, style):
-        """
-        Check whether highlighting requires multiple lines.
-        """
-        # If inside triple-single quotes, start at 0
         if self.previousBlockState() == in_state:
             start = 0
             add = 0
-        # Otherwise, look for the delimiter on this line
         else:
             start = delimiter.indexIn(text)
-            # Move past this match
             add = delimiter.matchedLength()
 
-        # As long as there's a delimiter match on this line...
         while start >= 0:
-            # Look for the ending delimiter
             end = delimiter.indexIn(text, start + add)
-            # Ending delimiter on this line?
             if end >= add:
                 length = end - start + add + delimiter.matchedLength()
                 self.setCurrentBlockState(0)
-            # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
                 length = len(text) - start + add
-            # Apply formatting
             self.setFormat(start, length, style)
-            # Look for the next match
             start = delimiter.indexIn(text, start + length)
 
-        # Return True if still inside a multi-line string, False otherwise
         if self.currentBlockState() == in_state:
             return True
         else:
