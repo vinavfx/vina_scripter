@@ -38,11 +38,11 @@ def key_press_event(self, event):
 
     # if Tab convert to Space
     if key == 16777217:
-        indentation(self, 'indent')
+        indentation(self, "indent")
 
     # if Shift+Tab remove indent
     elif key == 16777218:
-        indentation(self, 'unindent')
+        indentation(self, "unindent")
 
     # if BackSpace try to snap to previous indent level
     elif key == 16777219:
@@ -53,8 +53,8 @@ def key_press_event(self, event):
         cursor = self.textCursor()
         cpos = cursor.position()
         apos = cursor.anchor()
-        text_before_cursor = self.toPlainText()[:min(cpos, apos)]
-        text_after_cursor = self.toPlainText()[max(cpos, apos):]
+        text_before_cursor = self.toPlainText()[: min(cpos, apos)]
+        text_after_cursor = self.toPlainText()[max(cpos, apos) :]
         text_all = self.toPlainText()
         to_line_start = text_before_cursor[::-1].find("\n")
         if to_line_start == -1:
@@ -80,8 +80,9 @@ def key_press_event(self, event):
             selection = cursor.selection().toPlainText()
         else:
             selection = ""
-        if key == Qt.Key_ParenLeft and (len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor) or not len(
-                text_after_cursor)):  # (
+        if key == Qt.Key_ParenLeft and (
+            len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor) or not len(text_after_cursor)
+        ):  # (
             cursor.insertText("(" + selection + ")")
             cursor.setPosition(apos + 1, QTextCursor.MoveAnchor)
             cursor.setPosition(cpos + 1, QTextCursor.KeepAnchor)
@@ -90,9 +91,9 @@ def key_press_event(self, event):
         elif key == Qt.Key_ParenRight and text_after_cursor.startswith(")"):
             cursor.movePosition(QTextCursor.NextCharacter)
             self.setTextCursor(cursor)
-        elif key in [94, Qt.Key_BracketLeft] \
-                and (len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor)
-                     or not len(text_after_cursor)):  # [
+        elif key in [94, Qt.Key_BracketLeft] and (
+            len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor) or not len(text_after_cursor)
+        ):  # [
             cursor.insertText("[" + selection + "]")
             cursor.setPosition(apos + 1, QTextCursor.MoveAnchor)
             cursor.setPosition(cpos + 1, QTextCursor.KeepAnchor)
@@ -101,8 +102,9 @@ def key_press_event(self, event):
         elif key in [Qt.Key_BracketRight, 43, 93] and text_after_cursor.startswith("]"):
             cursor.movePosition(QTextCursor.NextCharacter)
             self.setTextCursor(cursor)
-        elif key == Qt.Key_BraceLeft and (len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor)
-                                          or not len(text_after_cursor)):  # {
+        elif key == Qt.Key_BraceLeft and (
+            len(selection) > 0 or re.match(r"[\s)}\];]+", text_after_cursor) or not len(text_after_cursor)
+        ):  # {
             cursor.insertText("{" + selection + "}")
             cursor.setPosition(apos + 1, QTextCursor.MoveAnchor)
             cursor.setPosition(cpos + 1, QTextCursor.KeepAnchor)
@@ -121,8 +123,9 @@ def key_press_event(self, event):
             # If chars after cursor, act normal
             elif not re.match(r"(?:[\s)\]]+|$)", text_after_cursor):
                 QPlainTextEdit.keyPressEvent(self, event)
-            elif not re.search(r"[\s.({\[,]$",
-                               text_before_cursor) and text_before_cursor != "":  # Chars before cursor: act normal
+            elif (
+                not re.search(r"[\s.({\[,]$", text_before_cursor) and text_before_cursor != ""
+            ):  # Chars before cursor: act normal
                 QPlainTextEdit.keyPressEvent(self, event)
             else:
                 cursor.insertText('"' + selection + '"')
@@ -139,8 +142,9 @@ def key_press_event(self, event):
             # If chars after cursor, act normal
             elif not re.match(r"(?:[\s)\]]+|$)", text_after_cursor):
                 QPlainTextEdit.keyPressEvent(self, event)
-            elif not re.search(r"[\s.({\[,]$",
-                               text_before_cursor) and text_before_cursor != "":  # Chars before cursor: act normal
+            elif (
+                not re.search(r"[\s.({\[,]$", text_before_cursor) and text_before_cursor != ""
+            ):  # Chars before cursor: act normal
                 QPlainTextEdit.keyPressEvent(self, event)
             else:
                 cursor.insertText("'" + selection + "'")
@@ -152,57 +156,46 @@ def key_press_event(self, event):
             if selection != "":
                 selection_split = selection.split("\n")
                 if all(i.startswith("#") for i in selection_split):
-                    selection_commented = "\n".join(
-                        [s[1:] for s in selection_split])  # Uncommented
+                    selection_commented = "\n".join([s[1:] for s in selection_split])  # Uncommented
                 else:
                     selection_commented = "#" + "\n#".join(selection_split)
                 cursor.insertText(selection_commented)
                 if apos > cpos:
-                    cursor.setPosition(apos + len(selection_commented) - len(selection),
-                                       QTextCursor.MoveAnchor)
+                    cursor.setPosition(apos + len(selection_commented) - len(selection), QTextCursor.MoveAnchor)
                     cursor.setPosition(cpos, QTextCursor.KeepAnchor)
                 else:
                     cursor.setPosition(apos, QTextCursor.MoveAnchor)
-                    cursor.setPosition(cpos + len(selection_commented) - len(selection),
-                                       QTextCursor.KeepAnchor)
+                    cursor.setPosition(cpos + len(selection_commented) - len(selection), QTextCursor.KeepAnchor)
                 self.setTextCursor(cursor)
 
         elif key == 68 and ctrl and shift:  # Ctrl+Shift+D, to duplicate text or line/s
 
             if not len(selection):
-                self.setPlainText(
-                    text_before_lines + text_lines + "\n" + text_lines + "\n" + text_after_lines)
-                cursor.setPosition(
-                    apos + len(text_lines) + 1, QTextCursor.MoveAnchor)
-                cursor.setPosition(
-                    cpos + len(text_lines) + 1, QTextCursor.KeepAnchor)
+                self.setPlainText(text_before_lines + text_lines + "\n" + text_lines + "\n" + text_after_lines)
+                cursor.setPosition(apos + len(text_lines) + 1, QTextCursor.MoveAnchor)
+                cursor.setPosition(cpos + len(text_lines) + 1, QTextCursor.KeepAnchor)
                 self.setTextCursor(cursor)
                 self.verticalScrollBar().setValue(pre_scroll)
                 scrollToCursor(self)
             else:
                 if text_before_cursor.endswith("\n") and not selection.startswith("\n"):
                     cursor.insertText(selection + "\n" + selection)
-                    cursor.setPosition(
-                        apos + len(selection) + 1, QTextCursor.MoveAnchor)
-                    cursor.setPosition(
-                        cpos + len(selection) + 1, QTextCursor.KeepAnchor)
+                    cursor.setPosition(apos + len(selection) + 1, QTextCursor.MoveAnchor)
+                    cursor.setPosition(cpos + len(selection) + 1, QTextCursor.KeepAnchor)
                 else:
                     cursor.insertText(selection + selection)
-                    cursor.setPosition(
-                        apos + len(selection), QTextCursor.MoveAnchor)
-                    cursor.setPosition(
-                        cpos + len(selection), QTextCursor.KeepAnchor)
+                    cursor.setPosition(apos + len(selection), QTextCursor.MoveAnchor)
+                    cursor.setPosition(cpos + len(selection), QTextCursor.KeepAnchor)
                 self.setTextCursor(cursor)
 
-        elif key == up_arrow and ctrl and shift and len(
-                text_before_lines):  # Ctrl+Shift+Up, to move the selected line/s up
-            prev_line_start_distance = text_before_lines[:-1][::-1].find(
-                "\n")
+        elif (
+            key == up_arrow and ctrl and shift and len(text_before_lines)
+        ):  # Ctrl+Shift+Up, to move the selected line/s up
+            prev_line_start_distance = text_before_lines[:-1][::-1].find("\n")
             if prev_line_start_distance == -1:
                 prev_line_start_pos = 0  # Position of the start of the previous line
             else:
-                prev_line_start_pos = len(
-                    text_before_lines) - 1 - prev_line_start_distance
+                prev_line_start_pos = len(text_before_lines) - 1 - prev_line_start_distance
             prev_line = text_before_lines[prev_line_start_pos:]
 
             text_before_prev_line = text_before_lines[:prev_line_start_pos]
@@ -213,12 +206,9 @@ def key_press_event(self, event):
             if len(text_after_lines):
                 text_after_lines = "\n" + text_after_lines
 
-            self.setPlainText(
-                text_before_prev_line + text_lines + "\n" + prev_line + text_after_lines)
-            cursor.setPosition(apos - len(prev_line) -
-                               1, QTextCursor.MoveAnchor)
-            cursor.setPosition(cpos - len(prev_line) -
-                               1, QTextCursor.KeepAnchor)
+            self.setPlainText(text_before_prev_line + text_lines + "\n" + prev_line + text_after_lines)
+            cursor.setPosition(apos - len(prev_line) - 1, QTextCursor.MoveAnchor)
+            cursor.setPosition(cpos - len(prev_line) - 1, QTextCursor.KeepAnchor)
             self.setTextCursor(cursor)
             self.verticalScrollBar().setValue(pre_scroll)
             scrollToCursor(self)
@@ -235,12 +225,9 @@ def key_press_event(self, event):
             next_line = text_after_lines[:next_line_end_pos]
             text_after_next_line = text_after_lines[next_line_end_pos:]
 
-            self.setPlainText(text_before_lines + next_line +
-                              "\n" + text_lines + text_after_next_line)
-            cursor.setPosition(apos + len(next_line) +
-                               1, QTextCursor.MoveAnchor)
-            cursor.setPosition(cpos + len(next_line) +
-                               1, QTextCursor.KeepAnchor)
+            self.setPlainText(text_before_lines + next_line + "\n" + text_lines + text_after_next_line)
+            cursor.setPosition(apos + len(next_line) + 1, QTextCursor.MoveAnchor)
+            cursor.setPosition(cpos + len(next_line) + 1, QTextCursor.KeepAnchor)
             self.setTextCursor(cursor)
             self.verticalScrollBar().setValue(pre_scroll)
             scrollToCursor(self)
@@ -287,20 +274,20 @@ def key_press_event(self, event):
 
 def indentNewLine(self):
     # In case selection covers multiple line, make it one line first
-    self.insertPlainText('')
+    self.insertPlainText("")
     getCursorInfo(self)
 
     # Check how many spaces after cursor
     text = self.document().findBlock(self.firstChar).text()
-    text_in_front = text[:self.cursorBlockPos]
+    text_in_front = text[: self.cursorBlockPos]
 
     if len(text_in_front) == 0:
-        self.insertPlainText('\n')
+        self.insertPlainText("\n")
         return
 
     indent_level = 0
     for i in text_in_front:
-        if i == ' ':
+        if i == " ":
             indent_level += 1
         else:
             break
@@ -311,17 +298,17 @@ def indentNewLine(self):
     # if that's the case add another indent.
     # ignore any spaces at the end, however also
     # make sure text_in_front is not just an indent
-    if text_in_front.count(' ') != len(text_in_front):
-        while text_in_front[-1] == ' ':
+    if text_in_front.count(" ") != len(text_in_front):
+        while text_in_front[-1] == " ":
             text_in_front = text_in_front[:-1]
 
-    if text_in_front[-1] == ':':
+    if text_in_front[-1] == ":":
         indent_level += 1
 
     # new line
-    self.insertPlainText('\n')
+    self.insertPlainText("\n")
     # match indent
-    self.insertPlainText(' ' * int(self.tab_spaces * indent_level))
+    self.insertPlainText(" " * int(self.tab_spaces * indent_level))
 
 
 def getCursorInfo(self):
@@ -341,8 +328,7 @@ def getCursorInfo(self):
 
 def scrollToCursor(self):
     self.cursor = self.textCursor()
-    self.cursor.movePosition(
-        QTextCursor.NoMove)  # Does nothing, but makes the scroll go to the right place...
+    self.cursor.movePosition(QTextCursor.NoMove)  # Does nothing, but makes the scroll go to the right place...
     self.setTextCursor(self.cursor)
 
 
@@ -353,29 +339,24 @@ def indentation(self, mode):
 
     # if nothing is selected and mode is set to indent, simply insert as many
     # space as needed to reach the next indentation level.
-    if self.noSelection and mode == 'indent':
-        remaining_spaces = self.tab_spaces - \
-            (self.cursorBlockPos % self.tab_spaces)
-        self.insertPlainText(' ' * remaining_spaces)
+    if self.noSelection and mode == "indent":
+        remaining_spaces = self.tab_spaces - (self.cursorBlockPos % self.tab_spaces)
+        self.insertPlainText(" " * remaining_spaces)
         return
 
     selected_blocks = findBlocks(self, self.firstChar, self.lastChar)
-    before_blocks = findBlocks(
-        self, last=self.firstChar - 1, exclude=selected_blocks)
-    after_blocks = findBlocks(
-        self, first=self.lastChar + 1, exclude=selected_blocks)
+    before_blocks = findBlocks(self, last=self.firstChar - 1, exclude=selected_blocks)
+    after_blocks = findBlocks(self, first=self.lastChar + 1, exclude=selected_blocks)
 
     before_blocks_text = blocks2list(self, before_blocks)
     selected_blocks_text = blocks2list(self, selected_blocks, mode)
     after_blocks_text = blocks2list(self, after_blocks)
 
-    combined_text = '\n'.join(
-        before_blocks_text + selected_blocks_text + after_blocks_text)
+    combined_text = "\n".join(before_blocks_text + selected_blocks_text + after_blocks_text)
 
     # make sure the line count stays the same
-    original_block_count = len(self.toPlainText().split('\n'))
-    combined_text = '\n'.join(combined_text.split('\n')[
-                              :original_block_count])
+    original_block_count = len(self.toPlainText().split("\n"))
+    combined_text = "\n".join(combined_text.split("\n")[:original_block_count])
 
     self.clear()
     self.setPlainText(combined_text)
@@ -412,11 +393,10 @@ def unindentBackspace(self):
         return False
 
     # check text in front of cursor
-    text_in_front = self.document().findBlock(
-        self.firstChar).text()[:self.cursorBlockPos]
+    text_in_front = self.document().findBlock(self.firstChar).text()[: self.cursorBlockPos]
 
     # check whether solely spaces
-    if text_in_front != ' ' * self.cursorBlockPos:
+    if text_in_front != " " * self.cursorBlockPos:
         return False
 
     # snap to previous indent level
@@ -442,16 +422,16 @@ def blocks2list(self, blocks, mode=None):
     text = []
     for block in blocks:
         block_text = block.text()
-        if mode == 'unindent':
-            if block_text.startswith(' ' * self.tab_spaces):
-                block_text = block_text[self.tab_spaces:]
+        if mode == "unindent":
+            if block_text.startswith(" " * self.tab_spaces):
+                block_text = block_text[self.tab_spaces :]
                 self.lastChar -= self.tab_spaces
-            elif block_text.startswith(' '):
+            elif block_text.startswith(" "):
                 block_text = block_text[1:]
                 self.lastChar -= 1
 
-        elif mode == 'indent':
-            block_text = ' ' * self.tab_spaces + block_text
+        elif mode == "indent":
+            block_text = " " * self.tab_spaces + block_text
             self.lastChar += self.tab_spaces
 
         text.append(block_text)

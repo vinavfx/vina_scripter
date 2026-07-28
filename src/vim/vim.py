@@ -26,22 +26,23 @@ class vim_widget(QWidget):
         layout.setSpacing(10)
         self.setLayout(layout)
 
-        self.mode_label = QLabel('NORMAL')
+        self.mode_label = QLabel("NORMAL")
         self.command_line = QLineEdit()
         self.command_line.setFont(QFont(self.parent.fonts[2], 9))
 
-        self.command_line.setToolTip('w : Save script to node\n'
-                                     'wq : Save and Exit\n'
-                                     'q : Exit node\n'
-                                     'q! : Exit node without saving\n'
-                                     'tabnew : New script page\n'
-                                     'tabclose : Close script page\n'
-                                     'tabo : Close all except the current page\n'
-                                     '1, 2, 3... : Go to line\n'
-                                     '/ : Search\n'
-                                     '%s/src/dst/g : Search and replace\n'
-                                     'retab : Change the indentation to 4 spaces'
-                                     )
+        self.command_line.setToolTip(
+            "w : Save script to node\n"
+            "wq : Save and Exit\n"
+            "q : Exit node\n"
+            "q! : Exit node without saving\n"
+            "tabnew : New script page\n"
+            "tabclose : Close script page\n"
+            "tabo : Close all except the current page\n"
+            "1, 2, 3... : Go to line\n"
+            "/ : Search\n"
+            "%s/src/dst/g : Search and replace\n"
+            "retab : Change the indentation to 4 spaces"
+        )
 
         layout.addWidget(self.mode_label)
         layout.addWidget(self.command_line)
@@ -49,28 +50,26 @@ class vim_widget(QWidget):
         scripter = self.parent.parent
 
         self.commands = {
-            'w': scripter.save,
-            'q': scripter.exit_node,
-            'qa': scripter.exit_node,
-            'q!': lambda: scripter.exit_node(True),
-            'qa!': lambda: scripter.exit_node(True),
-            'wq': lambda: (scripter.save(), scripter.exit_node()),
-            'wqa': lambda: (scripter.save(), scripter.exit_node()),
-            'tabnew': scripter.add_page,
-            'tabclose': scripter.remove_current_page,
-            'tabo': scripter.clean_all_pages,
-            'retab': self.retab
+            "w": scripter.save,
+            "q": scripter.exit_node,
+            "qa": scripter.exit_node,
+            "q!": lambda: scripter.exit_node(True),
+            "qa!": lambda: scripter.exit_node(True),
+            "wq": lambda: (scripter.save(), scripter.exit_node()),
+            "wqa": lambda: (scripter.save(), scripter.exit_node()),
+            "tabnew": scripter.add_page,
+            "tabclose": scripter.remove_current_page,
+            "tabo": scripter.clean_all_pages,
+            "retab": self.retab,
         }
 
     def set_mode(self, mode):
-        if mode == 'visual' or mode == 'visual_line':
-            label_mode = '<b><font color=#c27ddb>{}</font></b>'.format(
-                mode.replace('_', ' ').upper())
-        elif mode == 'insert':
-            label_mode = '<b><font color=#57c1de>{}</font></b>'.format(
-                mode.upper())
+        if mode == "visual" or mode == "visual_line":
+            label_mode = "<b><font color=#c27ddb>{}</font></b>".format(mode.replace("_", " ").upper())
+        elif mode == "insert":
+            label_mode = "<b><font color=#57c1de>{}</font></b>".format(mode.upper())
         else:
-            label_mode = '<b>{}</b>'.format(mode.upper())
+            label_mode = "<b>{}</b>".format(mode.upper())
 
         self.mode_label.setText(label_mode)
 
@@ -83,10 +82,7 @@ class vim_widget(QWidget):
             self.parent.set_focus()
             return
 
-        if (ctrl and key == Qt.Key_Return
-            or ctrl and key == Qt.Key_M
-            or key == Qt.Key_Return
-            ):
+        if ctrl and key == Qt.Key_Return or ctrl and key == Qt.Key_M or key == Qt.Key_Return:
 
             self.run_command()
             self.command_line.clear()
@@ -117,8 +113,8 @@ class vim_widget(QWidget):
 
             diffs = []
 
-            for i in range(len(indents)-1):
-                diff = abs(indents[i] - indents[i+1])
+            for i in range(len(indents) - 1):
+                diff = abs(indents[i] - indents[i + 1])
                 if diff:
                     diffs.append(diff)
 
@@ -153,18 +149,18 @@ class vim_widget(QWidget):
             if prev_indent == 2:
                 spaces = 2 * current_indent
             elif prev_indent == 3:
-                spaces = (current_indent + int(current_indent / 3))
+                spaces = current_indent + int(current_indent / 3)
             elif prev_indent == 6:
-                spaces = (current_indent - int(current_indent / 3))
+                spaces = current_indent - int(current_indent / 3)
             elif prev_indent == 8:
                 spaces = int(current_indent / 2)
 
             if not spaces % 4 == 0:
                 spaces += 4 - spaces % 4
 
-            spaces = spaces * ' '
+            spaces = spaces * " "
 
-            new_text = '{}{}'.format(spaces, text[current_indent:])
+            new_text = "{}{}".format(spaces, text[current_indent:])
             cursor.removeSelectedText()
             cursor.insertText(new_text)
 
@@ -182,8 +178,7 @@ class vim_widget(QWidget):
         if line > line_count:
             line = line_count
 
-        cursor.setPosition(
-            editor.document().findBlockByLineNumber(line - 1).position())
+        cursor.setPosition(editor.document().findBlockByLineNumber(line - 1).position())
         editor.setTextCursor(cursor)
 
     def run_command(self):
@@ -191,7 +186,7 @@ class vim_widget(QWidget):
 
         prefix = self.command_line.text()[:1]
 
-        if prefix == '/':
+        if prefix == "/":
             editor = self.parent.get_editor()
             editor.is_search = True
             editor.highlight_word(command)

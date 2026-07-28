@@ -8,4 +8,5 @@ from . import (
     script_output,
     toolbar,
     keys_normal_mode,
-    vim)
+    vim,
+)

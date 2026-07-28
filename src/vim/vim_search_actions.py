@@ -7,7 +7,7 @@ from ...nuke_util.pyside import QTextCursor
 
 
 def search(self, cursor, _):
-    self.parent.parent.vim.write_command('/')
+    self.parent.parent.vim.write_command("/")
     return cursor
 
 
@@ -35,8 +35,7 @@ def next_found_word(self, cursor, _):
 
         if next_word_pos <= pos:
             index += 1
-            next_word_pos = words[index] if index < len(
-                words) else words[0]
+            next_word_pos = words[index] if index < len(words) else words[0]
 
         cursor.setPosition(next_word_pos)
 

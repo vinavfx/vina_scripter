@@ -8,6 +8,7 @@ from ..nuke_util.panels import panel_widget, float_panel_widget
 
 from .scripter import scripter_widget
 
+
 class panel_scripter(panel_widget):
     def __init__(self, parent=None):
         super(panel_scripter, self).__init__(parent)
@@ -34,7 +35,7 @@ class float_scripter(float_panel_widget):
         self.scripter = scripter_widget(self, float_panel=True)
         layout.addWidget(self.scripter)
 
-        self.setWindowTitle('Vina Scripter')
+        self.setWindowTitle("Vina Scripter")
         self.resize(700, 700)
         self.center_window()
 
@@ -43,5 +44,3 @@ class float_scripter(float_panel_widget):
             self.scripter.exit_node()
 
         return super(float_scripter, self).closeEvent(event)
-
-

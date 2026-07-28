@@ -49,7 +49,7 @@ def indent_line_to_left(self, cursor, _, edit_block=True):
 
     cursor.movePosition(QTextCursor.StartOfLine)
 
-    for c in text[:self.tab_spaces]:
+    for c in text[: self.tab_spaces]:
         if c.isspace():
             cursor.deleteChar()
         else:
@@ -57,7 +57,7 @@ def indent_line_to_left(self, cursor, _, edit_block=True):
 
     text = cursor.block().text()
 
-    if text[0].isspace() if text else '':
+    if text[0].isspace() if text else "":
         cursor.movePosition(QTextCursor.NextWord)
 
     if edit_block:
@@ -105,13 +105,13 @@ def indent_selection(self, cursor, _, right=True):
         cursor.movePosition(QTextCursor.NextBlock)
 
     cursor.clearSelection()
-    self.set_mode('normal')
+    self.set_mode("normal")
 
     cursor.setPosition(start)
     cursor.movePosition(QTextCursor.StartOfLine)
 
     text = cursor.block().text()
-    if text[0].isspace() if text else '':
+    if text[0].isspace() if text else "":
         cursor.movePosition(QTextCursor.NextWord)
 
     cursor.endEditBlock()
@@ -123,7 +123,7 @@ def remove_double_empty_lines(self, cursor, _):
     cursor.beginEditBlock()
     doc = self.document()
     content = doc.toPlainText().strip()
-    new_content = re.sub(r'\n\s*\n\s*\n+', '\n\n', content)
+    new_content = re.sub(r"\n\s*\n\s*\n+", "\n\n", content)
 
     cursor.select(QTextCursor.Document)
     cursor.insertText(new_content)

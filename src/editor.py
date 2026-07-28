@@ -3,7 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
-import nuke # type: ignore
+import nuke  # type: ignore
 
 import re
 
@@ -33,6 +33,7 @@ from .python_highlighter import KSPythonHighlighter
 from .blink_highlighter import KSBlinkHighlighter
 from .tcl_highlighter import tcl_highlighter
 
+
 class multi_editor_widget(QWidget):
     def __init__(self, parent):
         super(multi_editor_widget, self).__init__()
@@ -43,7 +44,7 @@ class multi_editor_widget(QWidget):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self.fonts = ['Consolas', 'Courier New', 'Inconsolata']
+        self.fonts = ["Consolas", "Courier New", "Inconsolata"]
 
         self.vim_mode = False
         self.vim = vim_widget(self)
@@ -96,7 +97,7 @@ class multi_editor_widget(QWidget):
 
             dimension += 1
 
-    def set_code(self, code, cursor_name='', syntax='python', dimension=0):
+    def set_code(self, code, cursor_name="", syntax="python", dimension=0):
         self.editors[dimension].set_code(code, cursor_name, syntax)
 
     def set_vim_mode(self, vim_mode):
@@ -145,13 +146,13 @@ class editor_widget(QWidget):
         self.blink_highlight = KSBlinkHighlighter()
         self.tcl_highlight = tcl_highlighter()
 
-        self.syntax = 'python'
+        self.syntax = "python"
         self.python_highlight.setDocument(self.editor.document())
 
         layout.addWidget(self.editor)
 
         self.cursors_pile = {}
-        self.current_cursor = ''
+        self.current_cursor = ""
 
         self.text_changed_connected = False
         self.connect_changed()
@@ -167,10 +168,9 @@ class editor_widget(QWidget):
         else:
             self.editor.textChanged.disconnect()
 
-    def set_code(self, code, cursor_name='', syntax='python'):
+    def set_code(self, code, cursor_name="", syntax="python"):
         if self.current_cursor:
-            self.cursors_pile[self.current_cursor] = self.editor.textCursor(
-            ).position()
+            self.cursors_pile[self.current_cursor] = self.editor.textCursor().position()
 
         if not code == self.get_code():
             self.connect_changed(False)
@@ -185,8 +185,7 @@ class editor_widget(QWidget):
 
         self.current_cursor = cursor_name
 
-        self.cursors_pile = {key: value for key,
-                             value in self.cursors_pile.items() if value != 0}
+        self.cursors_pile = {key: value for key, value in self.cursors_pile.items() if value != 0}
 
     def set_syntax(self, syntax):
         if syntax == self.syntax:
@@ -199,10 +198,10 @@ class editor_widget(QWidget):
         self.tcl_highlight.setDocument(None)
         self.blink_highlight.setDocument(None)
 
-        if syntax == 'python':
+        if syntax == "python":
             self.python_highlight.setDocument(document)
 
-        elif syntax == 'tcl':
+        elif syntax == "tcl":
             self.tcl_highlight.setDocument(document)
 
         else:
@@ -221,8 +220,7 @@ class editor_widget(QWidget):
         self.editor.number_area.set_vim_mode(vim_mode)
 
         textOption = QTextOption()
-        textOption.setWrapMode(
-            QTextOption.NoWrap if vim_mode else QTextOption.WordWrap)
+        textOption.setWrapMode(QTextOption.NoWrap if vim_mode else QTextOption.WordWrap)
 
         self.editor.document().setDefaultTextOption(textOption)
         self.editor.setFocus()
@@ -242,7 +240,7 @@ class code_editor(QPlainTextEdit):
         self.setAcceptDrops(False)
 
         self.tab_spaces = 4
-        self.tab_string = self.tab_spaces * ' '
+        self.tab_string = self.tab_spaces * " "
 
         self.number_area = line_number_area(self)
 
@@ -254,10 +252,9 @@ class code_editor(QPlainTextEdit):
         self.setPalette(palette)
 
         self.error_line = False
-        self.set_mode('normal')
+        self.set_mode("normal")
 
-        self.cursorPositionChanged.connect(
-            lambda: (self.number_area.update(), self.highlight_current_line()))
+        self.cursorPositionChanged.connect(lambda: (self.number_area.update(), self.highlight_current_line()))
 
         self.blockCountChanged.connect(self.number_area.update)
 
@@ -265,7 +262,7 @@ class code_editor(QPlainTextEdit):
 
         self.highlight_line_selection = None
         self.highlight_word_selections = []
-        self.current_word = ''
+        self.current_word = ""
         self.is_search = False
 
         self.backup_nuke_shortcut = []
@@ -282,11 +279,11 @@ class code_editor(QPlainTextEdit):
     def disable_nuke_shortcut(self, disable=True):
         if disable:
             nuke_actions = [
-                nuke.menu('Nuke').menu('File').menu('Close Comp'),
-                nuke.menu('Nuke').menu('File').menu('Open Comp...'),
-                nuke.menu('Nuke').menu('Viewer').menu('Toggle Monitor Out'),
-                nuke.menu('Nuke').menu('Viewer').menu('New Comp Viewer'),
-                nuke.menu('Nodes').menu('ComfyUI/Scripts/executeRuns')
+                nuke.menu("Nuke").menu("File").menu("Close Comp"),
+                nuke.menu("Nuke").menu("File").menu("Open Comp..."),
+                nuke.menu("Nuke").menu("Viewer").menu("Toggle Monitor Out"),
+                nuke.menu("Nuke").menu("Viewer").menu("New Comp Viewer"),
+                nuke.menu("Nodes").menu("ComfyUI/Scripts/executeRuns"),
             ]
 
             self.backup_nuke_shortcut = []
@@ -296,7 +293,7 @@ class code_editor(QPlainTextEdit):
                     continue
 
                 self.backup_nuke_shortcut.append([act, act.shortcut()])
-                act.setShortcut('')
+                act.setShortcut("")
         else:
             for act, shortcut in self.backup_nuke_shortcut:
                 act.setShortcut(shortcut)
@@ -338,13 +335,12 @@ class code_editor(QPlainTextEdit):
         self.parent.parent.vim.set_mode(mode)
         self.mode = mode
 
-        if mode == 'normal':
+        if mode == "normal":
             self.number_area.set_color(QColor(255, 200, 100))
-        elif mode == 'insert':
+        elif mode == "insert":
             self.number_area.set_color(QColor(130, 220, 255))
         else:
             self.number_area.set_color(QColor(200, 100, 255))
-
 
     def set_line_error(self, line_number):
 
@@ -360,8 +356,7 @@ class code_editor(QPlainTextEdit):
         self.setTextCursor(cursor)
 
         textOption = QTextOption()
-        textOption.setWrapMode(
-            QTextOption.NoWrap if self.parent.parent.vim_mode else QTextOption.WordWrap)
+        textOption.setWrapMode(QTextOption.NoWrap if self.parent.parent.vim_mode else QTextOption.WordWrap)
         self.document().setDefaultTextOption(textOption)
 
         cursor = center_cursor(self, cursor)
@@ -370,7 +365,6 @@ class code_editor(QPlainTextEdit):
 
         self.error_line = True
         self.highlight_current_line()
-
 
     def highlight_current_line(self):
         selection = QTextEdit.ExtraSelection()
@@ -399,7 +393,7 @@ class code_editor(QPlainTextEdit):
         if not word:
             word = self.current_word
 
-        pattern = r'\b{}\b'.format(word)
+        pattern = r"\b{}\b".format(word)
         if self.is_search:
             pattern = word
 
@@ -443,8 +437,7 @@ class code_editor(QPlainTextEdit):
             selection.cursor = cursor
             selection.cursor.clearSelection()
             selection.cursor.setPosition(pos)
-            selection.cursor.movePosition(
-                QTextCursor.Right, QTextCursor.KeepAnchor, len(word))
+            selection.cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, len(word))
 
             self.highlight_word_selections.append(selection)
 

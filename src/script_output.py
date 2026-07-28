@@ -17,7 +17,7 @@ nuke_console = None
 
 def get_nuke_script_editor():
     for widget in QApplication.allWidgets():
-        if widget.metaObject().className() == 'Nuke::NukeScriptEditor':
+        if widget.metaObject().className() == "Nuke::NukeScriptEditor":
             return widget
 
 
@@ -40,7 +40,7 @@ def get_nuke_console():
 
     splitter = splitter[0]
     for widget in splitter.children():
-        if widget.metaObject().className() == 'Foundry::PythonUI::ScriptOutputWidget':
+        if widget.metaObject().className() == "Foundry::PythonUI::ScriptOutputWidget":
             nuke_console = widget
             return widget
 
@@ -64,8 +64,8 @@ class output_widget(QTextEdit):
     def flush(self):
         nuke_console = get_nuke_console()
         if nuke_console:
-            lines = nuke_console.toPlainText().split('\n')
-            self.setPlainText('\n'.join(lines[-self.MAX_LINES:]))
+            lines = nuke_console.toPlainText().split("\n")
+            self.setPlainText("\n".join(lines[-self.MAX_LINES :]))
             self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def update_output(self):

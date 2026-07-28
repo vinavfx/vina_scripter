@@ -12,49 +12,49 @@ from .vim_common_actions import fill_selection_blocks
 
 
 def select_towards(self, cursor, param):
-    key = param['key'].lower()
-    second_key = param['hotkey']['second_key']
-    shift = param['event'].modifiers() == Qt.ShiftModifier
+    key = param["key"].lower()
+    second_key = param["hotkey"]["second_key"]
+    shift = param["event"].modifiers() == Qt.ShiftModifier
 
-    param['anchor'] = QTextCursor.KeepAnchor
+    param["anchor"] = QTextCursor.KeepAnchor
 
-    if shift and key == 'g':
+    if shift and key == "g":
         goto_end(self, cursor, param)
         fill_selection_blocks(cursor)
 
-    elif key == 'g' and second_key == 'g':
+    elif key == "g" and second_key == "g":
         goto_start(self, cursor, param)
         fill_selection_blocks(cursor)
 
-    elif key == '0':
+    elif key == "0":
         goto_start_of_line(self, cursor, param)
 
-    elif key == '_':
+    elif key == "_":
         goto_first_char(self, cursor, param)
 
-    elif key == '$':
+    elif key == "$":
         goto_end_of_line(self, cursor, param, True)
 
-    elif key == '?':
+    elif key == "?":
         goto_char(self, cursor, param, second_key.isupper(), True)
 
-    elif key == 'b':
+    elif key == "b":
         go_back_word_start(self, cursor, param)
 
-    elif key == 'e' or key == 'w':
+    elif key == "e" or key == "w":
         goto_end_of_word(self, cursor, param, True)
 
-    elif key == 'l':
+    elif key == "l":
         goto_right(self, cursor, param)
 
-    elif key == 'h':
+    elif key == "h":
         goto_left(self, cursor, param)
 
-    elif key == 'k':
+    elif key == "k":
         goto_up(self, cursor, param)
         fill_selection_blocks(cursor)
 
-    elif key == 'j':
+    elif key == "j":
         goto_down(self, cursor, param)
         fill_selection_blocks(cursor)
 
@@ -62,23 +62,23 @@ def select_towards(self, cursor, param):
 
 
 def goto_start(_, cursor, param):
-    cursor.movePosition(QTextCursor.Start, param['anchor'])
+    cursor.movePosition(QTextCursor.Start, param["anchor"])
     return cursor
 
 
 def goto_end(_, cursor, param):
-    cursor.movePosition(QTextCursor.End, param['anchor'])
+    cursor.movePosition(QTextCursor.End, param["anchor"])
     return cursor
 
 
 def goto_char(_, cursor, param, reverse=False, forward=False):
-    event = param['event']
-    anchor = param['anchor']
+    event = param["event"]
+    anchor = param["anchor"]
 
     try:
         char = chr(event.key())
     except:
-        char = ''
+        char = ""
 
     text = cursor.block().text()
     if not text:
@@ -118,7 +118,7 @@ def goto_char(_, cursor, param, reverse=False, forward=False):
 
 
 def goto_end_of_line(_, cursor, param, forward=False):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     cursor.movePosition(QTextCursor.EndOfLine, anchor)
     if not forward:
         cursor.movePosition(QTextCursor.Left, anchor)
@@ -130,23 +130,23 @@ def go_to_first_char(cursor, anchor=QTextCursor.MoveAnchor):
     cursor.movePosition(QTextCursor.StartOfLine, anchor)
     block_text = cursor.block().text()
 
-    if block_text[0].isspace() if block_text else '':
+    if block_text[0].isspace() if block_text else "":
         cursor.movePosition(QTextCursor.NextWord, anchor)
 
     return cursor
 
 
 def goto_first_char(_, cursor, param):
-    go_to_first_char(cursor, param['anchor'])
+    go_to_first_char(cursor, param["anchor"])
     return cursor
 
 
 def goto_end_of_word(_, cursor, param, forward=False):
-    anchor = param['anchor']
+    anchor = param["anchor"]
 
     text = cursor.block().text()
     pos = cursor.positionInBlock()
-    current_char = text[pos] if len(text) > pos else ''
+    current_char = text[pos] if len(text) > pos else ""
 
     pos = cursor.position()
 
@@ -172,37 +172,37 @@ def goto_end_of_word(_, cursor, param, forward=False):
 
 
 def goto_start_of_line(_, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     cursor.movePosition(QTextCursor.StartOfLine, anchor)
     return cursor
 
 
 def goto_next_word_start(_, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     cursor.movePosition(QTextCursor.NextWord, anchor)
     return cursor
 
 
 def go_back_word_start(_, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     cursor.movePosition(QTextCursor.Left, anchor)
     cursor.movePosition(QTextCursor.StartOfWord, anchor)
     return cursor
 
 
 def goto_up(self, cursor, param):
-    cursor.movePosition(QTextCursor.Up, param['anchor'], self.held_number)
+    cursor.movePosition(QTextCursor.Up, param["anchor"], self.held_number)
     return cursor
 
 
 def goto_down(self, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     cursor.movePosition(QTextCursor.Down, anchor, self.held_number)
     return cursor
 
 
 def goto_left(self, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     if cursor.positionInBlock() > 0:
         cursor.movePosition(QTextCursor.Left, anchor, self.held_number)
 
@@ -210,7 +210,7 @@ def goto_left(self, cursor, param):
 
 
 def goto_right(self, cursor, param):
-    anchor = param['anchor']
+    anchor = param["anchor"]
     if cursor.positionInBlock() < cursor.block().length() - 1:
         cursor.movePosition(QTextCursor.Right, anchor, self.held_number)
 
@@ -233,12 +233,10 @@ def scroll_up(self, _, __):
 
 
 def center_cursor(self, cursor, _=None):
-    block_height = self.document().documentLayout(
-    ).blockBoundingRect(cursor.block()).height()
+    block_height = self.document().documentLayout().blockBoundingRect(cursor.block()).height()
 
     visible_rect = self.visibleRegion().boundingRect()
-    middle_block = int((visible_rect.center().y() -
-                       block_height/2) / block_height)
+    middle_block = int((visible_rect.center().y() - block_height / 2) / block_height)
 
     scroll_bar = self.verticalScrollBar()
     current_block = cursor.blockNumber()
@@ -249,12 +247,12 @@ def center_cursor(self, cursor, _=None):
 
 
 def jump_up(_, cursor, param):
-    cursor.movePosition(QTextCursor.Up, param['anchor'], 10)
+    cursor.movePosition(QTextCursor.Up, param["anchor"], 10)
     return cursor
 
 
 def jump_down(_, cursor, param):
-    cursor.movePosition(QTextCursor.Down, param['anchor'], 10)
+    cursor.movePosition(QTextCursor.Down, param["anchor"], 10)
     return cursor
 
 
@@ -300,9 +298,8 @@ def goto_function(self, cursor, _):
     except:
         tb = str(traceback.format_exc())
 
-        line_number = tb.rsplit('line', 1)[-1].strip().split(' ')[0]
-        line_number = ''.join(
-            [c if c.isdigit() else '' for c in line_number])
+        line_number = tb.rsplit("line", 1)[-1].strip().split(" ")[0]
+        line_number = "".join([c if c.isdigit() else "" for c in line_number])
 
         line_number = int(line_number)
         print(tb)
@@ -310,7 +307,6 @@ def goto_function(self, cursor, _):
 
         self.parent.set_line_error(line_number)
         return
-
 
     if def_line:
         block = self.document().findBlockByNumber(def_line - 1)

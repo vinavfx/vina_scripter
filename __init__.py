@@ -17,22 +17,18 @@ nuke_console_connected = False
 
 
 def setup():
-    path = os.path.join(get_nuke_path(), 'vina_scripter')
-    source = 'vina_scripter' if os.path.isdir(path) else 'vina.scripter'
+    path = os.path.join(get_nuke_path(), "vina_scripter")
+    source = "vina_scripter" if os.path.isdir(path) else "vina.scripter"
 
-    panels.init( source + '.vina_scripter.scripter_panel.panel_scripter', 'Vina Scripter')
+    panels.init(source + ".vina_scripter.scripter_panel.panel_scripter", "Vina Scripter")
 
-    panels.init_float_panel(
-        vina_scripter.scripter_panel.float_scripter, 'vina_scripter')
+    panels.init_float_panel(vina_scripter.scripter_panel.float_scripter, "vina_scripter")
 
-    nuke.menu('Nuke').addCommand(
-        'Edit/Node/Edit Script ( Vina Scripter )', enter_node, 'alt+z')
+    nuke.menu("Nuke").addCommand("Edit/Node/Edit Script ( Vina Scripter )", enter_node, "alt+z")
 
-    nuke.menu('Animation').addCommand(
-        'Python Expression', source + '.edit_expression()')
+    nuke.menu("Animation").addCommand("Python Expression", source + ".edit_expression()")
 
-    nuke.menu('Animation').addCommand(
-        'Tcl Expression', source + '.edit_expression(True)')
+    nuke.menu("Animation").addCommand("Tcl Expression", source + ".edit_expression(True)")
 
     nuke.addUpdateUI(connect_to_nuke_console)
 
@@ -58,8 +54,8 @@ def connect_to_nuke_console(connect=True):
 
 
 def update_consoles():
-    panel_widget = nuke.panels['vina_scripter']()
-    float_widget = nuke.float_panels['vina_scripter']
+    panel_widget = nuke.panels["vina_scripter"]()
+    float_widget = nuke.float_panels["vina_scripter"]
 
     if panel_widget:
         panel_widget.scripter.console.update_output()
@@ -68,10 +64,10 @@ def update_consoles():
 
 
 def get_scripter_panel():
-    panel_widget = nuke.panels['vina_scripter']()
-    float_widget = nuke.float_panels['vina_scripter']
+    panel_widget = nuke.panels["vina_scripter"]()
+    float_widget = nuke.float_panels["vina_scripter"]
 
-    if (panel_widget.isVisible() if panel_widget else False):
+    if panel_widget.isVisible() if panel_widget else False:
         return panel_widget
     else:
         return float_widget
