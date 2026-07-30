@@ -65,7 +65,9 @@ class vim_widget(QWidget):
 
     def set_mode(self, mode):
         if mode == "visual" or mode == "visual_line":
-            label_mode = "<b><font color=#c27ddb>{}</font></b>".format(mode.replace("_", " ").upper())
+            label_mode = "<b><font color=#c27ddb>{}</font></b>".format(
+                mode.replace("_", " ").upper()
+            )
         elif mode == "insert":
             label_mode = "<b><font color=#57c1de>{}</font></b>".format(mode.upper())
         else:
@@ -82,7 +84,13 @@ class vim_widget(QWidget):
             self.parent.set_focus()
             return
 
-        if ctrl and key == Qt.Key_Return or ctrl and key == Qt.Key_M or key == Qt.Key_Return:
+        if (
+            ctrl
+            and key == Qt.Key_Return
+            or ctrl
+            and key == Qt.Key_M
+            or key == Qt.Key_Return
+        ):
 
             self.run_command()
             self.command_line.clear()

@@ -277,7 +277,9 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
 
         for expression, nth, text_format in self.styles[self._style]["rules"]:
             is_string_rule = string_format is not None and text_format == string_format
-            is_comment_rule = comment_format is not None and text_format == comment_format
+            is_comment_rule = (
+                comment_format is not None and text_format == comment_format
+            )
 
             current_pos = 0
             index = expression.indexIn(text, current_pos)
@@ -293,7 +295,9 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
                     continue
 
                 if length > 0 and match_index >= 0:
-                    if is_comment_rule and any(start <= match_index < end for start, end in string_ranges):
+                    if is_comment_rule and any(
+                        start <= match_index < end for start, end in string_ranges
+                    ):
                         current_pos = index + total_match_len
                         index = expression.indexIn(text, current_pos)
                         continue
@@ -313,10 +317,14 @@ class KSPythonHighlighter(QtGui.QSyntaxHighlighter):
 
         self.setCurrentBlockState(0)
 
-        in_multiline = self.match_multiline(text, *self.styles[self._style]["tri_single"], string_ranges=string_ranges)
+        in_multiline = self.match_multiline(
+            text, *self.styles[self._style]["tri_single"], string_ranges=string_ranges
+        )
         if not in_multiline:
             in_multiline = self.match_multiline(
-                text, *self.styles[self._style]["tri_double"], string_ranges=string_ranges
+                text,
+                *self.styles[self._style]["tri_double"],
+                string_ranges=string_ranges
             )
 
     def highlightFStringExpressions(self, text):

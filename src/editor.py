@@ -185,7 +185,9 @@ class editor_widget(QWidget):
 
         self.current_cursor = cursor_name
 
-        self.cursors_pile = {key: value for key, value in self.cursors_pile.items() if value != 0}
+        self.cursors_pile = {
+            key: value for key, value in self.cursors_pile.items() if value != 0
+        }
 
     def set_syntax(self, syntax):
         if syntax == self.syntax:
@@ -254,7 +256,9 @@ class code_editor(QPlainTextEdit):
         self.error_line = False
         self.set_mode("normal")
 
-        self.cursorPositionChanged.connect(lambda: (self.number_area.update(), self.highlight_current_line()))
+        self.cursorPositionChanged.connect(
+            lambda: (self.number_area.update(), self.highlight_current_line())
+        )
 
         self.blockCountChanged.connect(self.number_area.update)
 
@@ -356,7 +360,9 @@ class code_editor(QPlainTextEdit):
         self.setTextCursor(cursor)
 
         textOption = QTextOption()
-        textOption.setWrapMode(QTextOption.NoWrap if self.parent.parent.vim_mode else QTextOption.WordWrap)
+        textOption.setWrapMode(
+            QTextOption.NoWrap if self.parent.parent.vim_mode else QTextOption.WordWrap
+        )
         self.document().setDefaultTextOption(textOption)
 
         cursor = center_cursor(self, cursor)
@@ -437,7 +443,9 @@ class code_editor(QPlainTextEdit):
             selection.cursor = cursor
             selection.cursor.clearSelection()
             selection.cursor.setPosition(pos)
-            selection.cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, len(word))
+            selection.cursor.movePosition(
+                QTextCursor.Right, QTextCursor.KeepAnchor, len(word)
+            )
 
             self.highlight_word_selections.append(selection)
 

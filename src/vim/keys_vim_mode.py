@@ -181,7 +181,18 @@ def init(self):
 
     self.held_number = 0
     self.copied = None
-    self.key_words = ["def", "class", "if", "elif", "else", "while", "with", "try", "except", "for"]
+    self.key_words = [
+        "def",
+        "class",
+        "if",
+        "elif",
+        "else",
+        "while",
+        "with",
+        "try",
+        "except",
+        "for",
+    ]
 
     self.first_held_key = None
     self.second_held_key = None
@@ -320,7 +331,11 @@ def key_press_event(self, event):
         else:
             ret = press(self, event, False, False, True)
 
-    elif key == self.leader_key and not self.mode == "insert" and not first_held_key in ["f", "F"]:
+    elif (
+        key == self.leader_key
+        and not self.mode == "insert"
+        and not first_held_key in ["f", "F"]
+    ):
         self.leader = True
         self.leader_activation = time()
 
@@ -378,7 +393,14 @@ def validate_hotkey(self, event, _hotkey):
     shift_match = shift == (modifiers == "shift")
     ctrl_match = ctrl == (modifiers == "ctrl")
 
-    if any([self.first_held_key, self.second_held_key, self.third_held_key, self.fourth_held_key]):
+    if any(
+        [
+            self.first_held_key,
+            self.second_held_key,
+            self.third_held_key,
+            self.fourth_held_key,
+        ]
+    ):
         if "ctrl+" in _hotkey:
             ctrl_match = True
 

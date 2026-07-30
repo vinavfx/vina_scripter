@@ -61,7 +61,10 @@ def insert_under(self, cursor, _):
     cursor.select(QTextCursor.BlockUnderCursor)
     if not cursor.selectedText().strip() == "":
         cursor.movePosition(QTextCursor.StartOfLine)
-        while cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor) and cursor.selectedText().isspace():
+        while (
+            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+            and cursor.selectedText().isspace()
+        ):
             spaces += 1
 
     cursor.movePosition(QTextCursor.EndOfLine)

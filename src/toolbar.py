@@ -79,7 +79,9 @@ class toolbar_widget(QWidget):
         self.exit_node_button.clicked.connect(self.parent.exit_node)
 
         self.restore_script_button = QPushButton()
-        self.restore_script_button.setIcon(QIcon("{}/icon_download.png".format(icons_path)))
+        self.restore_script_button.setIcon(
+            QIcon("{}/icon_download.png".format(icons_path))
+        )
         self.restore_script_button.setToolTip("Restore original Script")
         self.restore_script_button.clicked.connect(self.parent.restore)
 

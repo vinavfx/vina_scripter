@@ -20,15 +20,25 @@ def setup():
     path = os.path.join(get_nuke_path(), "vina_scripter")
     source = "vina_scripter" if os.path.isdir(path) else "vina.scripter"
 
-    panels.init(source + ".vina_scripter.scripter_panel.panel_scripter", "Vina Scripter")
+    panels.init(
+        source + ".vina_scripter.scripter_panel.panel_scripter", "Vina Scripter"
+    )
 
-    panels.init_float_panel(vina_scripter.scripter_panel.float_scripter, "vina_scripter")
+    panels.init_float_panel(
+        vina_scripter.scripter_panel.float_scripter, "vina_scripter"
+    )
 
-    nuke.menu("Nuke").addCommand("Edit/Node/Edit Script ( Vina Scripter )", enter_node, "alt+z")
+    nuke.menu("Nuke").addCommand(
+        "Edit/Node/Edit Script ( Vina Scripter )", enter_node, "alt+z"
+    )
 
-    nuke.menu("Animation").addCommand("Python Expression", source + ".edit_expression()")
+    nuke.menu("Animation").addCommand(
+        "Python Expression", source + ".edit_expression()"
+    )
 
-    nuke.menu("Animation").addCommand("Tcl Expression", source + ".edit_expression(True)")
+    nuke.menu("Animation").addCommand(
+        "Tcl Expression", source + ".edit_expression(True)"
+    )
 
     nuke.addUpdateUI(connect_to_nuke_console)
 

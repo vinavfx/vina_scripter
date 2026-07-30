@@ -233,7 +233,9 @@ def scroll_up(self, _, __):
 
 
 def center_cursor(self, cursor, _=None):
-    block_height = self.document().documentLayout().blockBoundingRect(cursor.block()).height()
+    block_height = (
+        self.document().documentLayout().blockBoundingRect(cursor.block()).height()
+    )
 
     visible_rect = self.visibleRegion().boundingRect()
     middle_block = int((visible_rect.center().y() - block_height / 2) / block_height)

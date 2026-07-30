@@ -98,7 +98,9 @@ def comment_text(self, text, toggle=True, comment=None):
         first_char_index = next((i for i, c in enumerate(line) if not c.isspace()), 0)
 
         first_char = line[first_char_index] if first_char_index < len(line) else ""
-        second_char = line[first_char_index + 1] if first_char_index + 1 < len(line) else ""
+        second_char = (
+            line[first_char_index + 1] if first_char_index + 1 < len(line) else ""
+        )
 
         comment_char = first_char
         if "//" in char_comment:

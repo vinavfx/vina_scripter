@@ -189,7 +189,12 @@ class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
         ]
 
         if "multiline_comments" in styles:
-            multiline_delimiter = (QRegExp("/\\*"), QRegExp("\\*/"), 1, styles["multiline_comments"])
+            multiline_delimiter = (
+                QRegExp("/\\*"),
+                QRegExp("\\*/"),
+                1,
+                styles["multiline_comments"],
+            )
         else:
             multiline_delimiter = (QRegExp("/\\*"), QRegExp("\\*/"), 1, base_format)
 
@@ -216,11 +221,15 @@ class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
             rules += [(r"\b%s\b" % i, 0, styles["type"]) for i in blinkTypes]
 
         if "variableKeyword" in styles:
-            rules += [(r"\b%s\b" % i, 0, styles["variableKeyword"]) for i in variableKeywords]
+            rules += [
+                (r"\b%s\b" % i, 0, styles["variableKeyword"]) for i in variableKeywords
+            ]
 
         #  Operators
         if "operator" in styles:
-            rules += [(r"%s" % re.escape(i), 0, styles["operator"]) for i in operatorKeywords]
+            rules += [
+                (r"%s" % re.escape(i), 0, styles["operator"]) for i in operatorKeywords
+            ]
 
         # String Literals
         if "stringDoubleQuote" in styles:
@@ -267,9 +276,13 @@ class KSBlinkHighlighter(QtGui.QSyntaxHighlighter):
 
         self.setCurrentBlockState(0)
 
-        self.match_multiline_blink(text, *self.styles[self._style]["multiline_delimiter"])
+        self.match_multiline_blink(
+            text, *self.styles[self._style]["multiline_delimiter"]
+        )
 
-    def match_multiline_blink(self, text, delimiter_start, delimiter_end, in_state, style):
+    def match_multiline_blink(
+        self, text, delimiter_start, delimiter_end, in_state, style
+    ):
         if self.previousBlockState() == in_state:
             start = 0
             add = 0

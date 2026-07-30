@@ -77,7 +77,11 @@ class scripter_widget(QWidget):
 
         self.exit_node()
 
-        nuke.addOnDestroy(lambda: self.exit_node(True) if nuke.thisNode() == self.current_node else None)
+        nuke.addOnDestroy(
+            lambda: self.exit_node(True)
+            if nuke.thisNode() == self.current_node
+            else None
+        )
 
         nuke.addKnobChanged(self.knob_changed)
 
@@ -85,7 +89,12 @@ class scripter_widget(QWidget):
 
         self.state_file = "{}/vina_scripter_state.json".format(get_nuke_path())
         self.restored_state = False
-        self.python_knobs_list = ["PythonKnob", "PyScript_Knob", "PythonCustomKnob", "Multiline_Eval_String_Knob"]
+        self.python_knobs_list = [
+            "PythonKnob",
+            "PyScript_Knob",
+            "PythonCustomKnob",
+            "Multiline_Eval_String_Knob",
+        ]
 
     def showEvent(self, event):
         self.restore_state()
@@ -188,7 +197,9 @@ class scripter_widget(QWidget):
         self.set_code(code)
 
     def clean_all_pages(self):
-        if not nuke.ask("Only the current page will be kept and all the others will be deleted, continue ?"):
+        if not nuke.ask(
+            "Only the current page will be kept and all the others will be deleted, continue ?"
+        ):
             return
 
         current_page = self.state["current_page"]
@@ -245,7 +256,11 @@ class scripter_widget(QWidget):
         expressions = []
 
         for _, knob in node.knobs().items():
-            if knob.Class() in ["PythonKnob", "PythonCustomKnob", "Multiline_Eval_String_Knob"]:
+            if knob.Class() in [
+                "PythonKnob",
+                "PythonCustomKnob",
+                "Multiline_Eval_String_Knob",
+            ]:
                 python_knobs.append(knob)
 
             elif knob.Class() == "PyScript_Knob":
@@ -353,7 +368,12 @@ class scripter_widget(QWidget):
     def set_expression(self, knob, code, syntax="python", dimension=-1):
         if syntax == "python":
             if self.line_count(code) > 1 or "ret=" in code or "ret " in code:
-                code = code.replace("\n", "\\n").replace("]", "\\]").replace("[", "\\[").replace(" ", "\\ ")
+                code = (
+                    code.replace("\n", "\\n")
+                    .replace("]", "\\]")
+                    .replace("[", "\\[")
+                    .replace(" ", "\\ ")
+                )
 
                 exp = "[python -execlocal {} ]".format(code)
 
@@ -392,7 +412,11 @@ class scripter_widget(QWidget):
             codes = expression
 
         else:
-            if self.current_knob.Class() in ["PythonKnob", "PythonCustomKnob", "Multiline_Eval_String_Knob"]:
+            if self.current_knob.Class() in [
+                "PythonKnob",
+                "PythonCustomKnob",
+                "Multiline_Eval_String_Knob",
+            ]:
                 codes[0] = {"value": self.current_knob.toScript(), "syntax": "python"}
             else:
                 codes[0] = {"value": str(self.current_knob.value()), "syntax": "python"}
@@ -461,16 +485,22 @@ class scripter_widget(QWidget):
         node_name = "Node: <b>{}</b>".format(self.current_node.name())
         self.toolbar.current_node_label.setText(node_name)
 
-        py_buttons, python_knobs, expressions_knobs = self.get_py_knobs(self.current_node)
+        py_buttons, python_knobs, expressions_knobs = self.get_py_knobs(
+            self.current_node
+        )
 
         if knob_expression:
             if not knob_expression.hasExpression(dimension):
                 if type(knob_expression) == nuke.Boolean_Knob:
                     default_value = knob_expression.value()
                 else:
-                    default_value = knob_expression.value(dimension if dimension >= 0 else 0)
+                    default_value = knob_expression.value(
+                        dimension if dimension >= 0 else 0
+                    )
 
-                self.set_expression(knob_expression, str(default_value), expr_syntax, dimension)
+                self.set_expression(
+                    knob_expression, str(default_value), expr_syntax, dimension
+                )
 
             self.toolbar.knob_selector.addItem(knob_expression.name())
 
@@ -682,14 +712,20 @@ class scripter_widget(QWidget):
         run_context = "root"
 
         if self.current_node and self.current_knob:
-            run_context = "{}.{}".format(self.current_node_name, self.current_knob.name())
+            run_context = "{}.{}".format(
+                self.current_node_name, self.current_knob.name()
+            )
         else:
             self.save_state()
 
-        python_code = "exec('''{}''')".format(code.replace("\\", "\\\\").replace("'", "\\'"))
+        python_code = "exec('''{}''')".format(
+            code.replace("\\", "\\\\").replace("'", "\\'")
+        )
 
         if not version_info.major == 3:
-            python_code = python_code.replace("\n", "\\n").replace('"', '\\"').replace("'", "\\'")
+            python_code = (
+                python_code.replace("\n", "\\n").replace('"', '\\"').replace("'", "\\'")
+            )
 
             python_code = 'eval(compile("{}", "", "exec"))'.format(python_code)
 
