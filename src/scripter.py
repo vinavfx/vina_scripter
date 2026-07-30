@@ -26,7 +26,7 @@ from .editor import multi_editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
 
-from ..python_util.util import jread, jwrite
+from ..nuke_util.python_util import jread, jwrite
 from ..nuke_util.nuke_util import get_nuke_path
 
 
