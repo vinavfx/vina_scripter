@@ -279,7 +279,7 @@ class code_editor(QPlainTextEdit):
 
     def focusOutEvent(self, event):
         self.disable_nuke_shortcut(False)
-        super(code_editor, self).focusInEvent(event)
+        super(code_editor, self).focusOutEvent(event)
 
     def disable_nuke_shortcut(self, disable=True):
         if disable:

@@ -48,6 +48,7 @@ class scripter_widget(QWidget):
         self.fonts = ["Consolas", "Courier New", "Inconsolata"]
 
         ctrl_s_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        ctrl_s_shortcut.activated.connect(self.save)
         ctrl_s_shortcut.activatedAmbiguously.connect(self.save)
 
         self.editor = multi_editor_widget(self)
@@ -181,6 +182,9 @@ class scripter_widget(QWidget):
         self.set_script_page(page)
 
     def remove_current_page(self):
+        if len(self.state["pages"]) == 1:
+            return
+
         self.toolbar.clear_pages()
 
         current_page = self.state["current_page"]
@@ -189,7 +193,7 @@ class scripter_widget(QWidget):
         for page in range(len(self.state["pages"])):
             self.toolbar.add_page(page)
 
-        new_current_page = current_page - 1 if current_page > 1 else 0
+        new_current_page = max(current_page - 1, 0)
 
         self.state["current_page"] = new_current_page
         self.toolbar.set_page(new_current_page)
@@ -414,9 +418,12 @@ class scripter_widget(QWidget):
             else:
                 exp = code
 
+        previous_knob_changed = self.activated_knob_changed
         self.activated_knob_changed = False
-        knob.setExpression(exp, dimension)
-        self.activated_knob_changed = True
+        try:
+            knob.setExpression(exp, dimension)
+        finally:
+            self.activated_knob_changed = previous_knob_changed
 
     def knob_selector_changed(self, knob_name):
         if not self.current_node:
@@ -595,28 +602,27 @@ class scripter_widget(QWidget):
         self.enter(node, knob)
 
     def save(self):
+        previous_knob_changed = self.activated_knob_changed
         self.activated_knob_changed = False
-        knob = self.current_knob
+        try:
+            knob = self.current_knob
 
-        if not knob or not self.current_node:
-            self.save_state()
-            self.activated_knob_changed = True
-            return
+            if not knob or not self.current_node:
+                self.save_state()
+                return
 
-        if knob.Class() in self.python_knobs_list:
-            code = self.editor.get_code(0)
+            if knob.Class() in self.python_knobs_list:
+                code = self.editor.get_code(0)
 
-            if knob.name() == "kernelSource":
-                knob.fromScript(code)
-                self.current_node.knob("recompile").execute()
-            else:
-                knob.setValue(code)
-        else:
-            if knob.singleValue():
+                if knob.name() == "kernelSource":
+                    knob.fromScript(code)
+                    self.current_node.knob("recompile").execute()
+                else:
+                    knob.setValue(code)
+            elif knob.singleValue():
                 code = self.editor.get_code(0)
                 syntax = self.editor.get_syntax(0)
                 self.set_expression(self.current_knob, code, syntax)
-
             else:
                 for d in range(knob.arraySize()):
                     if not knob.hasExpression(d):
@@ -626,8 +632,9 @@ class scripter_widget(QWidget):
                     syntax = self.editor.get_syntax(d)
                     self.set_expression(self.current_knob, code, syntax, d)
 
-        self.set_modified_knob(False)
-        self.activated_knob_changed = True
+            self.set_modified_knob(False)
+        finally:
+            self.activated_knob_changed = previous_knob_changed
 
     def check_and_save(self):
         if not self.modified_knob:
@@ -715,32 +722,31 @@ class scripter_widget(QWidget):
         aux = expr["value"]
 
         code = self.editor.get_code(dimension)
-        self.set_expression(knob, code, "tcl", dimension)
+        try:
+            self.set_expression(knob, code, "tcl", dimension)
 
-        if type(knob) is nuke.Boolean_Knob:
-            result = knob.value()
-        else:
-            result = knob.value(dimension)
+            if type(knob) is nuke.Boolean_Knob:
+                result = knob.value()
+            else:
+                result = knob.value(dimension)
 
-        error_console = self.get_nuke_error_console()
-        error = error_console.toPlainText().strip() if error_console else ""
+            error_console = self.get_nuke_error_console()
+            error = error_console.toPlainText().strip() if error_console else ""
 
-        key = re.sub("\\s+", " ", code)
+            key = re.sub("\\s+", " ", code)
 
-        if error_console and error:
-            err = error.splitlines()[-1].split(":", 2)[-1]
-            err = "ERROR:{}".format(err)
-            print(err)
-            self.tcl_errors[key] = err
-            error_console.clear()
-
-        elif key in self.tcl_errors:
-            print(self.tcl_errors[key])
-
-        else:
-            print(result)
-
-        self.set_expression(knob, aux, "tcl", dimension)
+            if error_console and error:
+                err = error.splitlines()[-1].split(":", 2)[-1]
+                err = "ERROR:{}".format(err)
+                print(err)
+                self.tcl_errors[key] = err
+                error_console.clear()
+            elif key in self.tcl_errors:
+                print(self.tcl_errors[key])
+            else:
+                print(result)
+        finally:
+            self.set_expression(knob, aux, "tcl", dimension)
 
     def execute_python(self, code):
         run_context = "root"
@@ -765,15 +771,22 @@ class scripter_widget(QWidget):
 
         try:
             nuke.runIn(run_context, python_code)
-        except BaseException:
-            tb = str(traceback.format_exc())
-            self.console.add_output(tb)
-
-            line_number = tb.rsplit("line", 1)[-1].strip().split(" ")[0]
-            line_number = "".join([c if c.isdigit() else "" for c in line_number])
-
-            line_number = int(line_number)
-            self.editor.set_line_error(line_number)
+        except BaseException as error:
+            self.console.add_output(traceback.format_exc())
+            if isinstance(error, SyntaxError):
+                line_number = error.lineno
+            else:
+                frames = traceback.extract_tb(error.__traceback__)
+                line_number = next(
+                    (
+                        frame.lineno
+                        for frame in reversed(frames)
+                        if frame.filename == "<string>"
+                    ),
+                    None,
+                )
+            if line_number is not None:
+                self.editor.set_line_error(line_number)
 
     def execute_script(self):
         dimension = self.editor.get_focus_dimension()
