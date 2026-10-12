@@ -14,12 +14,12 @@ from ..nuke_util.pyside import (
     QLabel,
     QIcon,
 )
-from ..nuke_util.nuke_util import get_nuke_path
+from ..nuke_util.paths import get_nuke_user_path
 
-icons_path = "{}/vina_scripter/icons".format(get_nuke_path())
+icons_path = "{}/vina_scripter/icons".format(get_nuke_user_path())
 
 if not os.path.isdir(icons_path):
-    icons_path = "{}/nuke_tools/icons".format(get_nuke_path())
+    icons_path = "{}/nuke_tools/icons".format(get_nuke_user_path())
 
 
 class toolbar_widget(QWidget):

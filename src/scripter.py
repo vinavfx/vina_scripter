@@ -20,14 +20,14 @@ from ..nuke_util.pyside import (
     QWidget,
 )
 
-import nuke
+import nuke  # type: ignore
 
 from .editor import multi_editor_widget
 from .script_output import output_widget
 from .toolbar import toolbar_widget
 
-from ..nuke_util.python_util import jread, jwrite
-from ..nuke_util.nuke_util import get_nuke_path
+from ..nuke_util.python_util import read_json_file, write_json_file
+from ..nuke_util.paths import get_nuke_user_path
 
 
 class scripter_widget(QWidget):
@@ -78,16 +78,16 @@ class scripter_widget(QWidget):
         self.exit_node()
 
         nuke.addOnDestroy(
-            lambda: self.exit_node(True)
-            if nuke.thisNode() == self.current_node
-            else None
+            lambda: (
+                self.exit_node(True) if nuke.thisNode() == self.current_node else None
+            )
         )
 
         nuke.addKnobChanged(self.knob_changed)
 
         nuke.addOnScriptClose(lambda: self.save_state(False))
 
-        self.state_file = "{}/vina_scripter_state.json".format(get_nuke_path())
+        self.state_file = "{}/vina_scripter_state.json".format(get_nuke_user_path())
         self.restored_state = False
         self.python_knobs_list = [
             "PythonKnob",
@@ -107,7 +107,7 @@ class scripter_widget(QWidget):
         if not self.restored_state:
             return
 
-        jwrite(self.state_file, self.state)
+        write_json_file(self.state_file, self.state)
 
     def knob_changed(self):
         if not self.current_knob == nuke.thisKnob():
@@ -130,7 +130,7 @@ class scripter_widget(QWidget):
         self.restored_state = True
 
         if os.path.isfile(self.state_file):
-            self.state = jread(self.state_file)
+            self.state = read_json_file(self.state_file)
 
         for page in range(len(self.state["pages"])):
             self.toolbar.add_page(page)
@@ -198,7 +198,8 @@ class scripter_widget(QWidget):
 
     def clean_all_pages(self):
         if not nuke.ask(
-            "Only the current page will be kept and all the others will be deleted, continue ?"
+            "Only the current page will be kept and all the others will be deleted,"
+            " continue ?"
         ):
             return
 
@@ -240,8 +241,9 @@ class scripter_widget(QWidget):
         is_tcl = self.is_tcl_expression(knob, dimension)
 
         if not is_tcl == tcl and knob.hasExpression(dimension):
-            msg = "A {} expression already exists, do you want to replace it with {}?".format(
-                "tcl" if is_tcl else "python", "python" if is_tcl else "tcl"
+            msg = (
+                "A {} expression already exists, do you want to replace it with {}?"
+                .format("tcl" if is_tcl else "python", "python" if is_tcl else "tcl")
             )
 
             if nuke.ask(msg):
@@ -296,7 +298,8 @@ class scripter_widget(QWidget):
 
     def get_expression(self, knob):
 
-        exprs = [None, None, None, None]
+        exprs = list()
+        exprs.extend([None, None, None, None])
         if not hasattr(knob, "singleValue"):
             return exprs
 
@@ -305,7 +308,7 @@ class scripter_widget(QWidget):
         def append_expr(dimension):
             expr = raw_exprs[dimension]
 
-            if expr == None:
+            if expr is None:
                 return
 
             if self.is_tcl_expression(knob, dimension):
@@ -403,12 +406,13 @@ class scripter_widget(QWidget):
         expression = self.get_expression(self.current_knob)
         blink_source = self.get_blinkscript_source(self.current_knob)
 
-        codes = [None, None, None, None]
+        codes = list()
+        codes.extend([None, None, None, None])
 
         if blink_source:
             codes[0] = {"value": blink_source, "syntax": "blink"}
 
-        elif any(not d == None for d in expression):
+        elif any(d is not None for d in expression):
             codes = expression
 
         else:
@@ -423,7 +427,7 @@ class scripter_widget(QWidget):
 
         cursor_name = self.current_node_name + self.current_knob.name()
 
-        dimensions = [not d == None for d in codes]
+        dimensions = [d is not None for d in codes]
         self.editor.set_dimensions(*dimensions)
 
         for d, code in enumerate(codes):
@@ -491,7 +495,7 @@ class scripter_widget(QWidget):
 
         if knob_expression:
             if not knob_expression.hasExpression(dimension):
-                if type(knob_expression) == nuke.Boolean_Knob:
+                if type(knob_expression) is nuke.Boolean_Knob:
                     default_value = knob_expression.value()
                 else:
                     default_value = knob_expression.value(
@@ -611,7 +615,7 @@ class scripter_widget(QWidget):
             ask = nuke.ask if self.float_panel else nuke.askWithCancel
             if ask("The knob was modified, you want to save before exiting ?"):
                 self.save()
-        except:
+        except BaseException:
             return False
 
         self.set_modified_knob(False)
@@ -683,7 +687,7 @@ class scripter_widget(QWidget):
         code = self.editor.get_code(dimension)
         self.set_expression(knob, code, "tcl", dimension)
 
-        if type(knob) == nuke.Boolean_Knob:
+        if type(knob) is nuke.Boolean_Knob:
             result = knob.value()
         else:
             result = knob.value(dimension)
@@ -731,7 +735,7 @@ class scripter_widget(QWidget):
 
         try:
             nuke.runIn(run_context, python_code)
-        except:
+        except BaseException:
             tb = str(traceback.format_exc())
             self.console.add_output(tb)
 

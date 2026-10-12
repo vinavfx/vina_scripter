@@ -7,24 +7,23 @@ import nuke  # type: ignore
 import os
 from . import src as vina_scripter
 from .nuke_util import panels
-from .nuke_util.nuke_util import get_nuke_path
+from .nuke_util.paths import get_nuke_user_path
 
 from .src.script_output import get_nuke_console
-
 
 nuke_console = None
 nuke_console_connected = False
 
 
 def setup():
-    path = os.path.join(get_nuke_path(), "vina_scripter")
+    path = os.path.join(get_nuke_user_path(), "vina_scripter")
     source = "vina_scripter" if os.path.isdir(path) else "vina.scripter"
 
-    panels.init(
+    panels.register_docked_panel(
         source + ".vina_scripter.scripter_panel.panel_scripter", "Vina Scripter"
     )
 
-    panels.init_float_panel(
+    panels.create_floating_panel(
         vina_scripter.scripter_panel.float_scripter, "vina_scripter"
     )
 
