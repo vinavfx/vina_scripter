@@ -92,6 +92,7 @@ def strip_text(cursor):
 
 
 def normal(self, cursor, _=None):
+    was_visual_line = self.mode == "visual_line"
     self.set_mode("normal")
 
     text = cursor.block().text()
@@ -102,6 +103,8 @@ def normal(self, cursor, _=None):
         strip_text(cursor)
         cursor.endEditBlock()
 
+    if was_visual_line:
+        cursor.movePosition(QTextCursor.StartOfBlock)
     cursor.clearSelection()
     self.setTextCursor(cursor)
 

@@ -137,6 +137,8 @@ def copy_selection(self, cursor, _):
     multiline = True if len(text.splitlines()) > 1 else False
 
     self.parent.parent.copied = (text, multiline)
+    if self.mode == "visual_line":
+        cursor.movePosition(QTextCursor.StartOfBlock)
     self.set_mode("normal")
     cursor.clearSelection()
     self.setTextCursor(cursor)

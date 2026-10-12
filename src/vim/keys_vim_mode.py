@@ -446,7 +446,13 @@ def process_key_press_event(self, event):
         if self.mode == "normal":
             self.parent.parent.parent.exit_node()
 
-        elif self.mode in ["visual", "visual_line", "insert"]:
+        elif self.mode == "visual_line":
+            cursor = self.textCursor()
+            cursor.movePosition(QTextCursor.StartOfBlock)
+            self.setTextCursor(cursor)
+            self.set_mode("normal")
+
+        elif self.mode in ["visual", "insert"]:
             self.set_mode("normal")
 
     elif self.leader and not self.mode == "insert":
