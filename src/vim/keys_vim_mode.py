@@ -5,16 +5,85 @@
 # -----------------------------------------------------------
 from time import time
 
-from ...nuke_util.pyside import Qt, QTextCursor
+from ...nuke_util.pyside import Qt, QtGui, QTextCursor
 from ..keys_normal_mode import key_press_event as key_press_event_normal
 
-from .vim_misc_actions import *
-from .vim_general_actions import *
-from .vim_extract_actions import *
-from .vim_nav_actions import *
-from .vim_search_actions import *
-from .vim_surround_actions import *
-from .vim_commenter_actions import *
+from .vim_misc_actions import (
+    change_case,
+    change_case_word,
+    indent_line_to_left,
+    indent_line_to_right,
+    indent_selection,
+    remove_double_empty_lines,
+)
+from .vim_general_actions import (
+    escape,
+    insert,
+    insert_and_delete_char,
+    insert_next_char,
+    insert_to_end,
+    insert_to_start,
+    insert_under,
+    normal,
+    raise_bottom_line,
+    redo,
+    undo,
+    visual,
+    visual_line,
+    write_command,
+    zoom,
+)
+from .vim_extract_actions import (
+    copy,
+    copy_selection,
+    delete_char,
+    delete_selection,
+    delete_towards,
+    delete_towards_and_insert,
+    paste,
+    replace_char,
+)
+from .vim_nav_actions import (
+    center_cursor,
+    go_back_word_start,
+    goto_char,
+    goto_down,
+    goto_end,
+    goto_end_of_line,
+    goto_end_of_word,
+    goto_first_char,
+    goto_function,
+    goto_left,
+    goto_next_word_start,
+    goto_right,
+    goto_start,
+    goto_start_of_line,
+    goto_up,
+    jump_down,
+    jump_up,
+    redo_cursor,
+    scroll_down,
+    scroll_up,
+    undo_cursor,
+)
+from .vim_search_actions import (
+    find_words_over_cursor,
+    next_found_word,
+    previous_found_word,
+    search,
+)
+from .vim_surround_actions import (
+    enclose_word,
+    remove_enclosed_word,
+    replace_enclosed_word,
+)
+from .vim_commenter_actions import (
+    comment_current_line,
+    comment_end_line,
+    comment_selected_text,
+    comment_to_end,
+)
+from .vim_common_actions import fill_selection_blocks
 
 
 def init(self):
@@ -180,7 +249,11 @@ def init(self):
     }
 
     self.held_number = 0
-    self.copied = None
+    self.pending_change_events = []
+    self.last_change_events = []
+    self.change_start_text = ""
+    self.replaying_change = False
+    self.ignore_change = False
     self.key_words = [
         "def",
         "class",
@@ -306,6 +379,61 @@ def init(self):
 
 
 def key_press_event(self, event):
+    if self.replaying_change:
+        return process_key_press_event(self, event)
+
+    if (
+        self.mode == "normal"
+        and event.key() == Qt.Key_Period
+        and event.modifiers() == Qt.NoModifier
+        and not self.leader
+        and not self.first_held_key
+    ):
+        repeat_last_change(self)
+        return
+
+    if not self.pending_change_events:
+        self.change_start_text = self.toPlainText()
+        self.ignore_change = False
+
+    self.pending_change_events.append(
+        QtGui.QKeyEvent(event.type(), event.key(), event.modifiers(), event.text())
+    )
+    result = process_key_press_event(self, event)
+
+    if (
+        self.mode == "normal"
+        and not self.first_held_key
+        and not self.leader
+        and not self.held_number
+    ):
+        if not self.ignore_change and self.toPlainText() != self.change_start_text:
+            self.last_change_events = self.pending_change_events[:]
+        self.pending_change_events = []
+
+    return result
+
+
+def repeat_last_change(self):
+    count = self.held_number or 1
+    self.held_number = 0
+    self.pending_change_events = []
+    if not self.last_change_events:
+        return
+
+    cursor = self.textCursor()
+    cursor.beginEditBlock()
+    self.replaying_change = True
+    try:
+        for _ in range(count):
+            for event in self.last_change_events:
+                process_key_press_event(self, event)
+    finally:
+        self.replaying_change = False
+        cursor.endEditBlock()
+
+
+def process_key_press_event(self, event):
     key = event.key()
     ret = 0
 
@@ -334,7 +462,7 @@ def key_press_event(self, event):
     elif (
         key == self.leader_key
         and not self.mode == "insert"
-        and not first_held_key in ["f", "F"]
+        and first_held_key not in ["f", "F"]
     ):
         self.leader = True
         self.leader_activation = time()
@@ -359,7 +487,7 @@ def key_match(self, event, char):
         return
 
     lower_char = char.lower()
-    if not lower_char in self.keys:
+    if lower_char not in self.keys:
         return False
 
     shift = event.modifiers() == Qt.ShiftModifier
@@ -380,8 +508,8 @@ def key_match(self, event, char):
     return False
 
 
-def validate_hotkey(self, event, _hotkey):
-    modifiers, hotkey = _hotkey.split("+", 1) if "+" in _hotkey else [False, _hotkey]
+def validate_hotkey(self, event, shortcut):
+    modifiers, hotkey = shortcut.split("+", 1) if "+" in shortcut else [False, shortcut]
 
     shift = event.modifiers() == Qt.ShiftModifier
     ctrl = event.modifiers() == Qt.ControlModifier
@@ -401,7 +529,7 @@ def validate_hotkey(self, event, _hotkey):
             self.fourth_held_key,
         ]
     ):
-        if "ctrl+" in _hotkey:
+        if "ctrl+" in shortcut:
             ctrl_match = True
 
     first_key = hotkey[0]
@@ -599,12 +727,12 @@ def get_action(self, event, hotkeys, resend_if_not_match=True):
 def char(key):
     try:
         return chr(key)
-    except:
+    except (ValueError, OverflowError):
         return ""
 
 
 def press(self, event, visual=False, visual_line=False, leader=False):
-    _char = char(event.key())
+    key_char = char(event.key())
 
     if visual:
         hotkeys = self.leader_visual_hotkeys if leader else self.visual_hotkeys
@@ -616,10 +744,10 @@ def press(self, event, visual=False, visual_line=False, leader=False):
     cursor = self.textCursor()
 
     run = None
-    if not _char.isdigit() or self.first_held_key:
+    if not key_char.isdigit() or self.first_held_key:
         run = get_action(self, event, hotkeys)
 
-    if not run and _char.isdigit():
+    if not run and key_char.isdigit():
         digit_action = get_action(self, event, hotkeys, False)
         if digit_action:
             key = digit_action[2]
@@ -632,11 +760,13 @@ def press(self, event, visual=False, visual_line=False, leader=False):
     func, hotkey, key = run if run else [None, None, None]
 
     if func:
+        if func in (undo, redo):
+            self.ignore_change = True
         self.held_number = self.held_number if self.held_number else 1
 
         params = {"anchor": anchor, "event": event, "key": key, "hotkey": hotkey}
 
-        if type(func) == tuple:
+        if isinstance(func, tuple):
             args = func[1:]
             func = func[0]
             cursor = func(self, cursor, params, *args)
@@ -654,9 +784,9 @@ def press(self, event, visual=False, visual_line=False, leader=False):
         self.leader = None
         self.held_number = 0
 
-    if _char.isdigit():
+    if key_char.isdigit():
         if not self.held_number > 100:
-            self.held_number = int(str(self.held_number) + _char)
+            self.held_number = int(str(self.held_number) + key_char)
 
     if not cursor:
         return

@@ -3,6 +3,7 @@
 # OFFICE --------> Senior VFX Compositor, Software Developer
 # WEBSITE -------> https://vinavfx.com
 # -----------------------------------------------------------
+import re
 from collections import Counter
 
 
@@ -115,9 +116,9 @@ class vim_widget(QWidget):
         def get_current_indent_count():
             indents = []
 
-            for l in editor.toPlainText().splitlines():
-                if l:
-                    indents.append(get_first_char_index(l))
+            for line in editor.toPlainText().splitlines():
+                if line:
+                    indents.append(get_first_char_index(line))
 
             diffs = []
 
@@ -131,8 +132,8 @@ class vim_widget(QWidget):
 
             try:
                 counted_data = Counter(diffs)
-                return max(counted_data, key=counted_data.get)
-            except:
+                return max(counted_data, key=lambda value: counted_data[value])
+            except ValueError:
                 return 4
 
         prev_indent = get_current_indent_count()
@@ -189,6 +190,48 @@ class vim_widget(QWidget):
         cursor.setPosition(editor.document().findBlockByLineNumber(line - 1).position())
         editor.setTextCursor(cursor)
 
+    def substitute(self, command):
+        match = re.fullmatch(r"%s/((?:\\.|[^/])*)/((?:\\.|[^/])*)/(g?)", command)
+        if not match or not match[1]:
+            print("Invalid substitution. Use :%s/pattern/replacement/g")
+            return
+
+        pattern, replacement, flags = match.groups()
+        pattern = pattern.replace(r"\/", "/")
+        replacement = replacement.replace(r"\/", "/")
+        replacement = re.sub(
+            r"\\.|&",
+            lambda token: (
+                r"\g<0>" if token[0] == "&" else "&" if token[0] == r"\&" else token[0]
+            ),
+            replacement,
+        )
+        editor = self.parent.get_editor()
+        try:
+            regex = re.compile(pattern)
+            lines = [
+                regex.sub(replacement, line, count=0 if flags == "g" else 1)
+                for line in editor.toPlainText().split("\n")
+            ]
+        except re.error as error:
+            print("Invalid substitution: {}".format(error))
+            return
+
+        cursor = editor.textCursor()
+        position = cursor.position()
+        cursor.beginEditBlock()
+        for index in range(len(lines) - 1, -1, -1):
+            block = editor.document().findBlockByNumber(index)
+            line = lines[index]
+            if block.text() == line:
+                continue
+            cursor.setPosition(block.position())
+            cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+            cursor.insertText(line)
+        cursor.endEditBlock()
+        cursor.setPosition(min(position, editor.document().characterCount() - 1))
+        editor.setTextCursor(cursor)
+
     def run_command(self):
         command = self.command_line.text()[1:]
 
@@ -199,10 +242,13 @@ class vim_widget(QWidget):
             editor.is_search = True
             editor.highlight_word(command)
 
+        elif prefix == ":" and command.startswith("%s"):
+            self.substitute(command)
+
         elif command.isdigit():
             self.go_to_line(int(command))
 
-        elif not command in self.commands:
+        elif command not in self.commands:
             print("'{}' command does not exist !".format(command))
 
         else:

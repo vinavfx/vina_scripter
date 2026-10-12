@@ -40,7 +40,8 @@ class float_scripter(float_panel_widget):
         self.center_window()
 
     def closeEvent(self, event):
-        if self.scripter:
-            self.scripter.exit_node()
+        if self.scripter and not self.scripter.exit_node():
+            event.ignore()
+            return
 
         return super(float_scripter, self).closeEvent(event)

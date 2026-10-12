@@ -47,6 +47,7 @@ class multi_editor_widget(QWidget):
         self.fonts = ["Consolas", "Courier New", "Inconsolata"]
 
         self.vim_mode = False
+        self.copied = None
         self.vim = vim_widget(self)
 
         splitter = QSplitter(Qt.Vertical)

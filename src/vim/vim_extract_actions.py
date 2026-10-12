@@ -5,7 +5,7 @@
 # -----------------------------------------------------------
 from ...nuke_util.pyside import Qt, QTextCursor
 
-from .vim_nav_actions import *
+from .vim_nav_actions import goto_end_of_line, select_towards
 from .vim_general_actions import strip_text
 
 
@@ -40,7 +40,7 @@ def delete_towards(self, cursor, param):
         if cursor.block().text().strip():
             cursor.movePosition(QTextCursor.NextWord)
 
-    self.copied = (text, multiline)
+    self.parent.parent.copied = (text, multiline)
 
     cursor.endEditBlock()
     return cursor
@@ -85,7 +85,7 @@ def delete_selection(self, cursor, param):
 
     text = cursor.selectedText()
     multiline = True if len(text.splitlines()) > 1 else False
-    self.copied = (text, multiline)
+    self.parent.parent.copied = (text, multiline)
 
     cursor.beginEditBlock()
     cursor.removeSelectedText()
@@ -123,7 +123,7 @@ def copy(self, cursor, param):
     if key == "y":
         multiline = True
 
-    self.copied = (cursor.selectedText(), multiline)
+    self.parent.parent.copied = (cursor.selectedText(), multiline)
 
     cursor.clearSelection()
     cursor.setPosition(pos)
@@ -136,18 +136,18 @@ def copy_selection(self, cursor, _):
     text = cursor.selectedText()
     multiline = True if len(text.splitlines()) > 1 else False
 
-    self.copied = (text, multiline)
+    self.parent.parent.copied = (text, multiline)
     self.set_mode("normal")
     cursor.clearSelection()
     self.setTextCursor(cursor)
 
 
 def paste(self, cursor, _):
-    if not self.copied:
+    if not self.parent.parent.copied:
         return
 
     cursor.beginEditBlock()
-    text, multiline = self.copied
+    text, multiline = self.parent.parent.copied
 
     for _ in range(self.held_number):
         if multiline:
@@ -172,13 +172,13 @@ def replace_char(_, cursor, param):
     shift = event.modifiers() == Qt.ShiftModifier
 
     cursor.beginEditBlock()
-    _char = char.upper() if shift else char.lower()
+    replacement = char.upper() if shift else char.lower()
 
     text = cursor.block().text()
 
     if text.strip():
         cursor.deleteChar()
-        cursor.insertText(_char)
+        cursor.insertText(replacement)
         cursor.movePosition(QTextCursor.Left)
 
     cursor.endEditBlock()

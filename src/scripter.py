@@ -10,6 +10,7 @@ from sys import version_info
 
 from ..nuke_util.pyside import (
     Qt,
+    QtWidgets,
     QColor,
     QKeySequence,
     QVBoxLayout,
@@ -196,8 +197,24 @@ class scripter_widget(QWidget):
         code = self.state["pages"][new_current_page]
         self.set_code(code)
 
+    def ask_confirmation(self, message, allow_cancel=False):
+        if not self.float_panel:
+            ask = nuke.askWithCancel if allow_cancel else nuke.ask
+            return ask(message)
+
+        dialog = QtWidgets.QMessageBox
+        buttons = dialog.Yes | dialog.No
+        if allow_cancel:
+            buttons |= dialog.Cancel
+        answer = dialog.question(
+            self.window(), "Vina Scripter", message, buttons, dialog.No
+        )
+        if answer == dialog.Cancel:
+            return None
+        return answer == dialog.Yes
+
     def clean_all_pages(self):
-        if not nuke.ask(
+        if not self.ask_confirmation(
             "Only the current page will be kept and all the others will be deleted,"
             " continue ?"
         ):
@@ -246,7 +263,7 @@ class scripter_widget(QWidget):
                 .format("tcl" if is_tcl else "python", "python" if is_tcl else "tcl")
             )
 
-            if nuke.ask(msg):
+            if self.ask_confirmation(msg):
                 knob.clearAnimated(dimension)
 
         syntax = "tcl" if tcl else "python"
@@ -312,8 +329,13 @@ class scripter_widget(QWidget):
                 return
 
             if self.is_tcl_expression(knob, dimension):
-                if any(i in expr for i in ["return", "set "]):
-                    expr = expr.split("[", 1)[1].rsplit("]", 1)[0]
+                stripped = expr.strip()
+                if (
+                    stripped.startswith("[")
+                    and stripped.endswith("]")
+                    and self.is_tcl_script(stripped[1:-1])
+                ):
+                    expr = stripped[1:-1]
 
                 exprs[dimension] = {"value": expr, "syntax": "tcl"}
 
@@ -368,6 +390,9 @@ class scripter_widget(QWidget):
 
         return False
 
+    def is_tcl_script(self, code):
+        return bool(re.search(r"(?:^|[;\n])\s*(?:return|set|expr)(?=\s|$)", code))
+
     def set_expression(self, knob, code, syntax="python", dimension=-1):
         if syntax == "python":
             if self.line_count(code) > 1 or "ret=" in code or "ret " in code:
@@ -384,7 +409,7 @@ class scripter_widget(QWidget):
                 exp = "[python {}]".format(code.replace("\n", "").strip())
 
         else:
-            if any(w in code for w in ["return", "set", "expr"]):
+            if self.is_tcl_script(code):
                 exp = "[" + code + "]"
             else:
                 exp = code
@@ -560,7 +585,7 @@ class scripter_widget(QWidget):
         if not self.modified_knob:
             return
 
-        if not nuke.ask("The new code will be deleted, continue ?"):
+        if not self.ask_confirmation("The new code will be deleted, continue ?"):
             return
 
         node = self.current_node
@@ -612,8 +637,13 @@ class scripter_widget(QWidget):
             return False
 
         try:
-            ask = nuke.ask if self.float_panel else nuke.askWithCancel
-            if ask("The knob was modified, you want to save before exiting ?"):
+            answer = self.ask_confirmation(
+                "The knob was modified, do you want to save before exiting?",
+                allow_cancel=True,
+            )
+            if answer is None:
+                return False
+            if answer:
                 self.save()
         except BaseException:
             return False

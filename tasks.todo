@@ -1,11 +1,11 @@
-☐ En barra vim poner comando de '%s/<find>/<replace>/g'
-☐ Agregar '.' como último atajo hecho
+✔ Implementar ':%s/<find>/<replace>/g' en la barra Vim @done(2026-10-11 21:33)
+✔ Repetir el último cambio con '.' @done(2026-10-11 21:33)
 ☐ Borrar espacios dobles en las líneas con leader + f
-☐ Que el copiado funcione entre splitter
+✔ Copiar y pegar entre los editores del splitter @done(2026-10-11 21:33)
 ✔ Agregar comando q! para salir sin guardar @done(2023-11-06 01:39) @project
 ✔ la ventana flotante, en windows queda por detras al no estar en foco @done(2023-11-06 01:40) @project
-☐ El dialogo de confirmación queda por debajo de la ventana flotante
+✔ Mostrar el diálogo de confirmación sobre la ventana flotante @done(2026-10-11 21:33)
 ☐ Al crear expression desde el menu en el knob 'disable', da error
 ☐ Con Control+P crear popup con menu con los knob, para poder cambiarlos
-☐ Esta expresión da error en noise (r.zoffset + 200), analizarla
+✔ Corregir la detección Tcl de '(r.zoffset + 200)' @done(2026-10-11 21:33)
 ☐ La 'r' para remplazar un caracter no funciona ya que se esta usando como leader
