@@ -330,6 +330,20 @@ class code_editor(QPlainTextEdit):
         else:
             return normal_key_press_event(self, event)
 
+    def paintEvent(self, event):
+        super(code_editor, self).paintEvent(event)
+
+        if self.mode != "visual_line" or not self.hasFocus():
+            return
+
+        cursor = self.textCursor()
+        cursor.movePosition(QTextCursor.StartOfBlock)
+        rect = self.cursorRect(cursor)
+        rect.setWidth(1)
+
+        painter = QPainter(self.viewport())
+        painter.fillRect(rect, self.palette().color(QPalette.Text))
+
     def resizeEvent(self, e):
         super(code_editor, self).resizeEvent(e)
         cr = self.contentsRect()
@@ -339,6 +353,8 @@ class code_editor(QPlainTextEdit):
     def set_mode(self, mode):
         self.parent.parent.vim.set_mode(mode)
         self.mode = mode
+        self.setCursorWidth(0 if mode == "visual_line" else 1)
+        self.viewport().update()
 
         if mode == "normal":
             self.number_area.set_color(QColor(255, 200, 100))

@@ -793,6 +793,9 @@ def press(self, event, visual=False, visual_line=False, leader=False):
 
     cursor = fill_selection_blocks(cursor) if visual_line else cursor
     self.setTextCursor(cursor)
+    if self.mode == "visual_line":
+        self.horizontalScrollBar().setValue(0)
+        self.viewport().update()
 
 
 def insert_mode(self, event):
