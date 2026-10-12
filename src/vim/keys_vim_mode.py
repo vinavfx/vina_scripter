@@ -11,10 +11,10 @@ from ..keys_normal_mode import key_press_event as key_press_event_normal
 from .vim_misc_actions import (
     change_case,
     change_case_word,
+    format_python,
     indent_line_to_left,
     indent_line_to_right,
     indent_selection,
-    remove_double_empty_lines,
 )
 from .vim_general_actions import (
     escape,
@@ -239,7 +239,7 @@ def init(self):
         "c$": comment_to_end,
         "cc": (comment_current_line, False, True),
         "cu": (comment_current_line, False, False),
-        "f1": remove_double_empty_lines,
+        "f": format_python,
     }
 
     self.leader_visual_hotkeys = {
