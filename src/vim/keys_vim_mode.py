@@ -444,7 +444,14 @@ def process_key_press_event(self, event):
 
     if key == Qt.Key_Escape:
         if self.mode == "normal":
-            self.parent.parent.parent.exit_node()
+            if self.first_held_key:
+                self.first_held_key = None
+                self.second_held_key = None
+                self.third_held_key = None
+                self.fourth_held_key = None
+                self.held_number = 0
+            else:
+                self.parent.parent.parent.exit_node()
 
         elif self.mode == "visual_line":
             cursor = self.textCursor()
@@ -603,6 +610,8 @@ def get_action(self, event, hotkeys, resend_if_not_match=True):
         return run
 
     def get_current_char():
+        if event.text():
+            return event.text()
         shift = event.modifiers() == Qt.ShiftModifier
 
         if key_char.lower() in self.abc and not shift:
